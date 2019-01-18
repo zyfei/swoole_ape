@@ -30,9 +30,9 @@ $config["database"] = array(
 // 设置配置
 Ape::config($config);
 
-Ape::listen("http://0.0.0.0:18080",array("name"=>"aa"));
+Ape::listen("http://0.0.0.0:18080");
 // 开启服务
-Ape::listen("http://0.0.0.0:18081",array("name"=>"bb"));
+Ape::listen("http://0.0.0.0:18081");
 //Ape::listen("udp://0.0.0.0:18082");
 Ape::runAll();
 // 后面不用写代码，不运行

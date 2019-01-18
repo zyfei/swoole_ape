@@ -74,8 +74,6 @@ class Ape {
 	 */
 	private static $co_pool = array();
 
-	private static $_maxWorkerNameLength;
-
 	private static $_maxSocketNameLength;
 
 	/**
@@ -321,18 +319,12 @@ class Ape {
 		}
 		// 添加到worker中去
 		$worker = array();
-		$worker["name"] = key_exists("name", $config) ? $config["name"] : self::$_config["name"];
 		$worker["address"] = $address;
 		$worker["scheme"] = $address_info['scheme'];
 		$worker["port"] = $address_info['port'];
 		$worker["host"] = $address_info['host'];
 		$worker["config"] = $config;
 		$worker["count"] = key_exists("worker_num", $config) ? $config["worker_num"] : self::$_config["worker_num"];
-		
-		$worker_name_length = strlen($worker["name"]);
-		if (self::$_maxWorkerNameLength < $worker_name_length) {
-			self::$_maxWorkerNameLength = $worker_name_length;
-		}
 		
 		// Get maximum length of socket name.
 		$socket_name_length = strlen($address);
@@ -350,8 +342,6 @@ class Ape {
 			throw new \Exception('address is null');
 		}
 		foreach (self::$_init_workers as $k => $n) {
-			dd($n["name"]);
-			dd($n["address"]);
 			if ($k == 0) {
 				self::$server = new swoole_server($n["host"], $n["port"], self::$_config["server_mode"], self::$_builtinTransports[$n["scheme"]]);
 				$config = self::$_config;
@@ -362,17 +352,12 @@ class Ape {
 					$config[$k2] = $n2;
 				}
 				self::$server->set($config);
-				self::$server->name = $n["name"];
-				self::$server->socket_name = $n["address"];
 			} else {
 				$config = self::$_builtinConfigs[$n["scheme"]];
 				foreach ($n["config"] as $k2 => $n2) {
 					$config[$k2] = $n2;
 				}
-				$s2 = self::$server->addListener($n["host"], $n["port"], self::$_builtinTransports[$n["scheme"]]);
-				$s2->set($config);
-				$s2->name = $n["name"];
-				$s2->socket_name = $n["address"];
+				$s2 = self::$server->addListener($n["host"], $n["port"], self::$_builtinTransports[$n["scheme"]])->set($config);
 			}
 		}
 		
@@ -402,6 +387,7 @@ class Ape {
 				}
 				\Ape::$_globalStatistics["workers"] = \Ape::$workers;
 				\Ape::$_globalStatistics["dead_workers"] = \Ape::$dead_workers;
+				\Ape::$_globalStatistics["request_count"] = \Ape::$server->stats()["request_count"];
 				file_put_contents(\Ape::$_statisticsFile, json_encode(\Ape::$_globalStatistics));
 			}
 			exec_statisticsFile();
@@ -412,9 +398,9 @@ class Ape {
 		self::$server->on('workerStart', function ($server, $worker_id) {
 			global $argv;
 			if ($server->taskworker) {
-				swoole_set_process_name('swoole_ape: task_worker process  ' . $server->name . ' ' . $server->socket_name);
+				swoole_set_process_name('swoole_ape: task_worker process  ' . self::$_config["name"]);
 			} else {
-				swoole_set_process_name('swoole_ape: worker process  ' . $server->name . ' ' . $server->socket_name);
+				swoole_set_process_name('swoole_ape: worker process  ' . self::$_config["name"]);
 			}
 			// 清空缓存
 			if ($worker_id == 0) {
@@ -428,8 +414,6 @@ class Ape {
 					$data["worker_id"] = $server->worker_id;
 					$data["pid"] = $server->worker_pid;
 					$data["memory"] = round(memory_get_usage(true) / (1024 * 1024), 2) . "M";
-					$data["listening"] = $server->socket_name;
-					$data["name"] = $server->name;
 					$data["status"] = $server->stats();
 					// 通知manager进程(注意不是master进程)
 					\Ape::send_worker_channel("worker", $data);
@@ -530,7 +514,6 @@ class Ape {
 		self::$_globalStatistics['reactor_num'] = self::$_config["reactor_num"];
 		self::$_globalStatistics['worker_num'] = self::$_config["worker_num"];
 		self::$_globalStatistics['listen'] = self::$_init_workers;
-		self::$_globalStatistics['maxWorkerNameLength'] = self::$_maxWorkerNameLength;
 		self::$_globalStatistics['maxSocketNameLength'] = self::$_maxSocketNameLength;
 		self::parseCommand();
 		self::loadPhpFiles();
@@ -686,9 +669,9 @@ class Ape {
 		self::safeEcho('SWOOLE version:' . swoole_version() . "          PHP version:" . PHP_VERSION . "\n");
 		self::safeEcho('reactor_num:' . self::$_config["reactor_num"] . '    worker_num:' . self::$_config["worker_num"] . "    cpu_num:" . swoole_cpu_num() . "\n");
 		self::safeEcho("------------------------\033[47;30m LISTEN \033[0m-------------------------------\n");
-		self::safeEcho("\033[47;30mworker\033[0m" . str_pad('', self::$_maxWorkerNameLength + 2 - strlen('name')) . "\033[47;30mlisten\033[0m" . str_pad('', self::$_maxSocketNameLength + 2 - strlen('listen')) . "\033[47;\033[47;30m" . "status\033[0m\n");
+		self::safeEcho("\033[47;30mlisten\033[0m" . str_pad('', self::$_maxSocketNameLength + 2 - strlen('listen')) . "\033[47;\033[47;30m" . "status\033[0m\n");
 		foreach (self::$_init_workers as $worker) {
-			self::safeEcho(str_pad($worker["name"], self::$_maxWorkerNameLength + 4) . str_pad($worker['address'], self::$_maxSocketNameLength + 2) . " \033[32;40m [OK] \033[0m\n");
+			self::safeEcho(str_pad($worker['address'], self::$_maxSocketNameLength + 2) . " \033[32;40m [OK] \033[0m\n");
 		}
 		self::safeEcho("----------------------------------------------------------------\n");
 		if (self::$_config["daemonize"]) {
@@ -704,33 +687,77 @@ class Ape {
 	 * 查看服务状态
 	 */
 	protected static function statusUI($json) {
-		$obj = json_decode($json, true);
-		self::safeEcho("\n	\033[1A\n\033[K-----------------------\033[47;30m " . $obj["name"] . " \033[0m-----------------------------\n\033[0m");
-		self::safeEcho('SWOOLE version:' . swoole_version() . "          PHP version:" . PHP_VERSION . "\n");
-		self::safeEcho('reactor_num:' . $obj["reactor_num"] . '    worker_num:' . $obj["worker_num"] . "    cpu_num:" . swoole_cpu_num() . "\n");
-		self::safeEcho("\n------------------------\033[47;30m LISTEN \033[0m-------------------------------\n");
-		self::safeEcho("\033[47;30mworker\033[0m" . str_pad('', $obj["maxWorkerNameLength"] + 2 - strlen('name')) . "\033[47;30mlisten\033[0m" . str_pad('', $obj["maxSocketNameLength"] + 2 - strlen('listen')) . "\033[47;\033[47;30m" . "status\033[0m\n");
-		foreach ($obj["listen"] as $worker) {
-			self::safeEcho(str_pad($worker["name"], $obj["maxWorkerNameLength"] + 4) . str_pad($worker['address'], $obj["maxSocketNameLength"] + 2) . " \033[32;40m [OK] \033[0m\n");
+		$i = 0;
+		global $safeEchoNum;
+		$safeEchoNum = 0;
+		echo("\e[1;1H\e[2J");
+		while(1){
+			$i++;
+			print("\033[1;1H");
+			sleep(1);
+			var_dump($i.'\n');
+			$obj = json_decode($json, true);
+			self::safeEcho("\033[1A\n\033[K-----------------------\033[47;30m " . $obj["name"] . " \033[0m-----------------------------\n\033[0m");
+			self::safeEcho('SWOOLE version:' . swoole_version() . "          PHP version:" . PHP_VERSION . "\n");
+			foreach ($obj["listen"] as $worker) {
+				self::safeEcho("\033[47;30mlisten\033[0m    " . str_pad($worker['address'], $obj["maxSocketNameLength"] + 2) . "\n");
+			}
+			self::safeEcho('reactor_num:' . $obj["reactor_num"] . '    worker_num:' . $obj["worker_num"] . "    cpu_num:" . swoole_cpu_num() . "    all_request_count:" . $obj["request_count"] . "\n");
+			self::safeEcho("------------------------\033[47;30m WORKERS \033[0m-------------------------------\n");
+			self::safeEcho("\033[47;30mpid\033[0m" . str_pad('', 7 - strlen('pid')) . "\033[47;\033[47;30m" . 
+			//
+			"\033[47;30mtype\033[0m" . str_pad('', 10 - strlen('type')) . "\033[47;30mmemory\033[0m" . str_pad('', 8 - strlen('memory')) . 
+			//
+			"\033[47;30mstart_time\033[0m" . str_pad('', 21 - strlen('start_time')) . 
+			//
+			"\033[47;30mconn_num\033[0m" . str_pad('', 10 - strlen('conn_num')) . "\033[47;30maccept_count\033[0m" . str_pad('', 14 - strlen('accept_count')) . 
+			//
+			"\033[47;30mrequest_count\033[0m" . str_pad('', 15 - strlen('request_count')) . "\033[47;30mcoroutine_num\033[0m" . str_pad('', 14 - strlen('accept_count')) . 
+			//
+			"\033[47;\033[47;30mstatus\033[0m\n");
+			
+			foreach ($obj["dead_workers"] as $worker) {
+				$status = $worker["status"];
+				$start_date = T($status["start_time"]);
+				$worker_type = "worker";
+				if ($worker["is_taskworker"]) {
+					$worker_type = "task";
+				}
+				self::safeEcho($worker["pid"] . str_pad('', 7 - strlen($worker["pid"])) . 
+				//
+				$worker_type . str_pad('', 10 - strlen($worker_type)) . $worker["memory"] . str_pad('', 8 - strlen($worker["memory"])) . 
+				//
+				$start_date . str_pad('', 21 - strlen($start_date)) . 
+				//
+				$status["connection_num"] . str_pad('', 10 - strlen($status["connection_num"])) . $status["accept_count"] . str_pad('', 14 - strlen($status["accept_count"])) . 
+				//
+				$status["worker_request_count"] . str_pad('', 15 - strlen($status["worker_request_count"])) . $status["coroutine_num"] . str_pad('', 14 - strlen($status["coroutine_num"])) . 
+				//
+				"\033[31;40m [dead] \033[0m\n");
+			}
+			foreach ($obj["workers"] as $worker) {
+				$status = $worker["status"];
+				$start_date = T($status["start_time"]);
+				$worker_type = "worker";
+				if ($worker["is_taskworker"]) {
+					$worker_type = "task";
+				}
+				self::safeEcho($worker["pid"] . str_pad('', 7 - strlen($worker["pid"])) . 
+				//
+				$worker_type . str_pad('', 10 - strlen($worker_type)) . $worker["memory"] . str_pad('', 8 - strlen($worker["memory"])) . 
+				//
+				$start_date . str_pad('', 21 - strlen($start_date)) . 
+				//
+				$status["connection_num"] . str_pad('', 10 - strlen($status["connection_num"])) . $status["accept_count"] . str_pad('', 14 - strlen($status["accept_count"])) . 
+				//
+				$status["worker_request_count"] . str_pad('', 15 - strlen($status["worker_request_count"])) . $status["coroutine_num"] . str_pad('', 14 - strlen($status["coroutine_num"])) . 
+				//
+				"\033[32;40m [ok] \033[0m\n");
+			}
+			self::safeEcho("----------------------------------------------------------------\n");
+			self::safeEcho("Press Ctrl-C to quit.\n");
 		}
 		
-		self::safeEcho("\n------------------------\033[47;30m WORKERS \033[0m-------------------------------\n");
-		foreach ($obj["dead_workers"] as $worker) {
-			$worker_type = "worker";
-			if ($worker["is_taskworker"]) {
-				$worker_type = "task";
-			}
-			self::safeEcho("pid:" . $worker["pid"] . $worker["listening"] . '   ' . $worker_type . $worker["memory"] . $worker["listening"] . '   ' . $worker_type . " \033[31;40m [dead] \033[0m\n");
-		}
-		foreach ($obj["workers"] as $worker) {
-			$worker_type = "worker";
-			if ($worker["is_taskworker"]) {
-				$worker_type = "task";
-			}
-			self::safeEcho("pid(" . $worker["pid"] . ")" . $worker["listening"] . '   ' . $worker_type . $worker["memory"] . $worker["listening"] . '   ' . $worker_type . " \033[32;40m [ok] \033[0m\n");
-		}
-		self::safeEcho("----------------------------------------------------------------\n");
-		self::safeEcho("Press Ctrl-C to quit.\n");
 	}
 
 	/**
