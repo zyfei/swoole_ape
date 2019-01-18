@@ -1,0 +1,759 @@
+2019-01-15 06:06:10 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:06:10 @572.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-15 14:06:10 #572.2]	WARNING	swServer_signal_handler: Fatal Error: manager process exit. status=0, signal=[Segmentation fault: 11].
+2019-01-15 06:06:45 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:06:45 @579.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-15 06:09:04 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:09:04 @586.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-15 06:09:45 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:09:45 @593.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-15 06:10:02 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:10:03 @600.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-15 06:10:12 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:10:12 @607.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-15 06:11:04 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:11:04 @616.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-15 06:14:07 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:14:07 @625.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-15 06:14:23 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:14:23 @632.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-15 06:16:42 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:16:42 @640.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-15 06:19:31 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:19:31 @647.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-15 14:19:31 $648.0]	ERROR	zm_deactivate_swoole (ERROR 503): Fatal error: go(): Unable to use async-io in manager process. in /mnt/d/workspace/swoole_web/_lib/Ape.php on line 385.
+[2019-01-15 14:19:31 #647.2]	WARNING	swServer_signal_handler: Fatal Error: manager process exit. status=255, signal=[Unknown signal 0: 0].
+2019-01-15 06:19:47 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:19:47 @654.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-15 06:23:21 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:23:21 @661.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-15 14:23:21 $662.0]	ERROR	zm_deactivate_swoole (ERROR 503): Fatal error: Uncaught Exception: can not save manager_pid_file to /mnt/d/workspace/swoole_web/manager.pid in /mnt/d/workspace/swoole_web/_lib/Ape.php:374
+Stack trace:
+#0 [internal function]: Ape::{closure}(Object(Swoole\Server))
+#1 /mnt/d/workspace/swoole_web/_lib/Ape.php(495): Swoole\Server->start()
+#2 /mnt/d/workspace/swoole_web/_lib/Ape.php(510): Ape::run()
+#3 /mnt/d/workspace/swoole_web/start.php(37): Ape::runAll()
+#4 {main}
+  thrown in /mnt/d/workspace/swoole_web/_lib/Ape.php on line 374.
+[2019-01-15 14:23:21 #661.2]	WARNING	swServer_signal_handler: Fatal Error: manager process exit. status=255, signal=[Unknown signal 0: 0].
+2019-01-15 06:23:49 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:23:49 @669.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-15 14:23:49 $670.0]	ERROR	zm_deactivate_swoole (ERROR 503): Fatal error: Uncaught Exception: can not save manager_pid_file to /mnt/d/workspace/swoole_web/manager.pid in /mnt/d/workspace/swoole_web/_lib/Ape.php:374
+Stack trace:
+#0 [internal function]: Ape::{closure}(Object(Swoole\Server))
+#1 /mnt/d/workspace/swoole_web/_lib/Ape.php(496): Swoole\Server->start()
+#2 /mnt/d/workspace/swoole_web/_lib/Ape.php(511): Ape::run()
+#3 /mnt/d/workspace/swoole_web/start.php(37): Ape::runAll()
+#4 {main}
+  thrown in /mnt/d/workspace/swoole_web/_lib/Ape.php on line 374.
+[2019-01-15 14:23:49 #669.2]	WARNING	swServer_signal_handler: Fatal Error: manager process exit. status=255, signal=[Unknown signal 0: 0].
+2019-01-15 06:25:30 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:25:30 @676.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-15 14:25:30 $677.0]	ERROR	zm_deactivate_swoole (ERROR 503): Fatal error: Uncaught Exception: can not save manager_pid_file to /mnt/d/workspace/swoole_web/manager.pid in /mnt/d/workspace/swoole_web/_lib/Ape.php:374
+Stack trace:
+#0 [internal function]: Ape::{closure}(Object(Swoole\Server))
+#1 /mnt/d/workspace/swoole_web/_lib/Ape.php(498): Swoole\Server->start()
+#2 /mnt/d/workspace/swoole_web/_lib/Ape.php(513): Ape::run()
+#3 /mnt/d/workspace/swoole_web/start.php(37): Ape::runAll()
+#4 {main}
+  thrown in /mnt/d/workspace/swoole_web/_lib/Ape.php on line 374.
+[2019-01-15 14:25:30 #676.2]	WARNING	swServer_signal_handler: Fatal Error: manager process exit. status=255, signal=[Unknown signal 0: 0].
+2019-01-15 06:25:52 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:25:53 @683.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-15 14:25:53 $684.0]	ERROR	zm_deactivate_swoole (ERROR 503): Fatal error: Uncaught Exception: can not save manager_pid_file to /mnt/d/workspace/swoole_web/manager.pid in /mnt/d/workspace/swoole_web/_lib/Ape.php:374
+Stack trace:
+#0 [internal function]: Ape::{closure}(Object(Swoole\Server))
+#1 /mnt/d/workspace/swoole_web/_lib/Ape.php(498): Swoole\Server->start()
+#2 /mnt/d/workspace/swoole_web/_lib/Ape.php(513): Ape::run()
+#3 /mnt/d/workspace/swoole_web/start.php(37): Ape::runAll()
+#4 {main}
+  thrown in /mnt/d/workspace/swoole_web/_lib/Ape.php on line 374.
+[2019-01-15 14:25:53 #683.2]	WARNING	swServer_signal_handler: Fatal Error: manager process exit. status=255, signal=[Unknown signal 0: 0].
+2019-01-15 06:26:29 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:26:29 @693.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-15 14:26:29 $694.0]	ERROR	zm_deactivate_swoole (ERROR 503): Fatal error: Uncaught Exception: can not save manager_pid_file to /mnt/d/workspace/swoole_web/manager.pid in /mnt/d/workspace/swoole_web/_lib/Ape.php:374
+Stack trace:
+#0 [internal function]: Ape::{closure}(Object(Swoole\Server))
+#1 /mnt/d/workspace/swoole_web/_lib/Ape.php(499): Swoole\Server->start()
+#2 /mnt/d/workspace/swoole_web/_lib/Ape.php(514): Ape::run()
+#3 /mnt/d/workspace/swoole_web/start.php(37): Ape::runAll()
+#4 {main}
+  thrown in /mnt/d/workspace/swoole_web/_lib/Ape.php on line 374.
+[2019-01-15 14:26:29 #693.2]	WARNING	swServer_signal_handler: Fatal Error: manager process exit. status=255, signal=[Unknown signal 0: 0].
+2019-01-15 06:30:09 SwooleApe[start.php] start in DEBUG mode
+[2019-01-15 14:30:09 @700.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 06:22:16 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 14:22:16 @20.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 06:31:04 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 14:31:04 @27.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 06:31:38 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 14:31:38 @34.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 06:33:07 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 14:33:07 @41.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 07:09:55 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 15:09:56 @64.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 07:11:01 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 15:11:01 @71.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 07:18:18 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 15:18:19 @79.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 15:18:29 $80.0]	ERROR	zm_deactivate_swoole (ERROR 503): Fatal error: Uncaught Error: Call to undefined method Swoole\Channel::isEmpty() in /mnt/d/workspace/swoole_web/_lib/Ape.php:383
+Stack trace:
+#0 [internal function]: Ape::{closure}(1)
+#1 /mnt/d/workspace/swoole_web/_lib/Ape.php(503): Swoole\Server->start()
+#2 /mnt/d/workspace/swoole_web/_lib/Ape.php(518): Ape::run()
+#3 /mnt/d/workspace/swoole_web/start.php(37): Ape::runAll()
+#4 {main}
+  thrown in /mnt/d/workspace/swoole_web/_lib/Ape.php on line 383.
+[2019-01-17 15:18:29 #79.2]	WARNING	swServer_signal_handler: Fatal Error: manager process exit. status=255, signal=[Unknown signal 0: 0].
+2019-01-17 07:20:48 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 15:20:48 @86.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 15:20:58 $87.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 15:21:08 $87.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 07:32:07 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 15:32:07 @99.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 15:32:07 $100.0]	ERROR	zm_deactivate_swoole (ERROR 503): Fatal error: Swoole\Process::signal(): Unable to use async-io in manager process. in /mnt/d/workspace/swoole_web/_lib/Ape.php on line 405.
+[2019-01-17 15:32:07 #99.2]	WARNING	swServer_signal_handler: Fatal Error: manager process exit. status=255, signal=[Unknown signal 0: 0].
+2019-01-17 07:39:46 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 15:39:46 @106.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 15:39:57 $107.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 15:40:07 $107.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 15:40:17 $107.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 15:40:27 $107.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 07:40:27 SwooleApe[start.php] start in DEBUG mode
+2019-01-17 07:40:27 SwooleApe[start.php] already running
+2019-01-17 07:40:31 SwooleApe[start.php] status 
+[2019-01-17 15:40:31 $107.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:40:32 $107.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:40:33 $107.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:40:34 $107.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:40:34 SwooleApe[start.php] status 
+[2019-01-17 15:40:34 $107.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:40:35 $107.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:40:36 $107.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:40:37 $107.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:40:38 $107.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:40:39 $107.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:40:40 $107.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:40:41 $107.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:41:00 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 15:41:00 @133.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 15:41:10 $134.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 15:41:20 $134.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 15:41:30 $134.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 15:41:40 $134.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 15:41:50 $134.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 07:41:56 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 15:41:56 @142.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 15:42:07 $143.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 15:42:17 $143.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 07:42:24 SwooleApe[start.php] status 
+[2019-01-17 15:42:24 $143.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:42:25 $143.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:42:26 $143.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:42:27 $143.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:42:28 $143.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:42:29 $143.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:42:30 $143.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:42:31 $143.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:42:32 $143.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:42:33 $143.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:43:19 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 15:43:19 @152.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 15:43:30 $153.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 07:43:32 SwooleApe[start.php] status 
+[2019-01-17 15:43:32 $153.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:43:33 $153.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:43:34 SwooleApe[start.php] status 
+[2019-01-17 15:43:34 $153.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:43:34 $153.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:43:35 $153.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:43:36 $153.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:45:32 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 15:45:32 @161.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 15:45:43 $162.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 07:45:44 SwooleApe[start.php] status 
+[2019-01-17 15:45:44 $162.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:45:44 $162.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:45:45 $162.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:45:46 $162.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:45:47 $162.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:45:48 $162.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:45:49 $162.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:45:50 $162.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:45:51 $162.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:45:52 $162.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:45:53 $162.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:55:01 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 15:55:01 @169.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 07:55:03 SwooleApe[start.php] status 
+[2019-01-17 15:55:03 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:03 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:03 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:04 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:55:04 SwooleApe[start.php] status 
+[2019-01-17 15:55:04 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:05 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:06 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:07 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:08 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:09 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:10 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:11 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:12 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:13 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:14 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:15 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:55:15 SwooleApe[start.php] status 
+[2019-01-17 15:55:15 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:16 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:17 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:55:17 SwooleApe[start.php] status 
+[2019-01-17 15:55:17 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:55:18 SwooleApe[start.php] status 
+[2019-01-17 15:55:18 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:18 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:55:18 SwooleApe[start.php] status 
+[2019-01-17 15:55:18 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:55:19 SwooleApe[start.php] status 
+[2019-01-17 15:55:19 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:19 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:55:19 SwooleApe[start.php] status 
+[2019-01-17 15:55:19 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:55:20 SwooleApe[start.php] status 
+[2019-01-17 15:55:20 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:20 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:55:20 SwooleApe[start.php] status 
+[2019-01-17 15:55:20 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:21 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:55:21 SwooleApe[start.php] status 
+[2019-01-17 15:55:21 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:55:22 SwooleApe[start.php] status 
+[2019-01-17 15:55:22 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:22 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:55:22 SwooleApe[start.php] status 
+[2019-01-17 15:55:22 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:55:23 SwooleApe[start.php] status 
+[2019-01-17 15:55:23 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:23 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:55:23 SwooleApe[start.php] status 
+[2019-01-17 15:55:23 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:24 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:55:24 SwooleApe[start.php] status 
+[2019-01-17 15:55:24 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:25 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:26 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:27 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:28 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+[2019-01-17 15:55:29 $170.0]	WARNING	swManager_loop: cannot reload task workers, task workers is not started.
+2019-01-17 07:59:11 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 15:59:11 @192.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 07:59:16 SwooleApe[start.php] stop 
+2019-01-17 07:59:16 SwooleApe[start.php] is stoping ...
+[2019-01-17 15:59:16 #192.2]	WARNING	swServer_signal_handler: Fatal Error: manager process exit. status=0, signal=[Unknown signal 0: 0].
+2019-01-17 07:59:16 SwooleApe[start.php] stop success
+2019-01-17 08:01:44 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 16:01:44 @203.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 08:03:13 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 16:03:13 @210.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 08:03:22 SwooleApe[start.php] stop 
+2019-01-17 08:03:22 SwooleApe[start.php] is stoping ...
+[2019-01-17 16:03:22 #210.2]	NOTICE	Server is shutdown now.
+2019-01-17 08:03:22 SwooleApe[start.php] stop success
+2019-01-17 08:03:38 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 16:03:39 @218.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 08:03:40 SwooleApe[start.php] stop 
+2019-01-17 08:03:40 SwooleApe[start.php] is stoping ...
+[2019-01-17 16:03:40 #218.2]	NOTICE	Server is shutdown now.
+2019-01-17 08:03:40 SwooleApe[start.php] stop success
+2019-01-17 08:04:58 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 16:04:58 @227.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 08:05:05 SwooleApe[start.php] reload 
+[2019-01-17 16:05:05 $228.0]	NOTICE	Server is reloading all workers now.
+2019-01-17 08:05:05 SwooleApe[start.php] reload
+[2019-01-17 16:05:09 $228.0]	ERROR	swManager_loop(:306): wait() failed. Error: No such file or directory[2].
+2019-01-17 08:05:19 SwooleApe[start.php] reload 
+[2019-01-17 16:05:19 $228.0]	NOTICE	Server is reloading all workers now.
+2019-01-17 08:05:19 SwooleApe[start.php] reload
+2019-01-17 08:05:58 SwooleApe[start.php] status 
+2019-01-17 08:06:00 SwooleApe[start.php] status 
+2019-01-17 08:06:01 SwooleApe[start.php] status 
+2019-01-17 08:06:02 SwooleApe[start.php] status 
+2019-01-17 08:06:03 SwooleApe[start.php] status 
+2019-01-17 08:06:03 SwooleApe[start.php] status 
+2019-01-17 08:06:04 SwooleApe[start.php] status 
+2019-01-17 08:06:05 SwooleApe[start.php] status 
+2019-01-17 08:06:05 SwooleApe[start.php] status 
+2019-01-17 08:06:06 SwooleApe[start.php] status 
+2019-01-17 08:06:06 SwooleApe[start.php] status 
+2019-01-17 08:06:07 SwooleApe[start.php] status 
+2019-01-17 08:06:07 SwooleApe[start.php] status 
+2019-01-17 08:06:07 SwooleApe[start.php] status 
+2019-01-17 08:06:08 SwooleApe[start.php] status 
+2019-01-17 08:06:08 SwooleApe[start.php] status 
+2019-01-17 08:06:09 SwooleApe[start.php] status 
+2019-01-17 08:06:09 SwooleApe[start.php] status 
+2019-01-17 08:06:09 SwooleApe[start.php] status 
+2019-01-17 08:06:10 SwooleApe[start.php] status 
+2019-01-17 08:06:10 SwooleApe[start.php] status 
+2019-01-17 08:06:11 SwooleApe[start.php] status 
+2019-01-17 08:06:11 SwooleApe[start.php] status 
+2019-01-17 08:06:39 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 16:06:39 @265.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 16:06:50 $266.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 16:07:00 $266.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 08:07:01 SwooleApe[start.php] status 
+2019-01-17 08:07:03 SwooleApe[start.php] status 
+2019-01-17 08:07:04 SwooleApe[start.php] status 
+2019-01-17 08:07:04 SwooleApe[start.php] status 
+2019-01-17 08:07:04 SwooleApe[start.php] status 
+2019-01-17 08:07:05 SwooleApe[start.php] status 
+2019-01-17 08:07:05 SwooleApe[start.php] status 
+2019-01-17 08:07:06 SwooleApe[start.php] status 
+2019-01-17 08:07:06 SwooleApe[start.php] status 
+2019-01-17 08:07:07 SwooleApe[start.php] status 
+[2019-01-17 16:07:10 $266.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 08:07:16 SwooleApe[start.php] status 
+[2019-01-17 16:07:20 $266.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 08:07:22 SwooleApe[start.php] status 
+[2019-01-17 16:07:30 $266.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 08:08:58 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 16:08:58 @286.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:01 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:02 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=255, signal=0
+[2019-01-17 16:09:03 $287.0]	WARNING	swManager_check_exit_status: worker#0 abnormal exit, status=255, signal=0
+2019-01-17 08:09:56 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 16:09:56 @469.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 08:10:19 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 16:10:19 @476.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 08:20:31 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 16:20:31 @483.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 08:20:34 SwooleApe[start.php] status 
+2019-01-17 08:20:36 SwooleApe[start.php] status 
+2019-01-17 08:20:36 SwooleApe[start.php] status 
+2019-01-17 08:20:37 SwooleApe[start.php] status 
+2019-01-17 08:20:37 SwooleApe[start.php] status 
+2019-01-17 08:20:38 SwooleApe[start.php] status 
+2019-01-17 08:20:38 SwooleApe[start.php] status 
+2019-01-17 08:20:39 SwooleApe[start.php] status 
+2019-01-17 08:20:39 SwooleApe[start.php] status 
+2019-01-17 08:20:40 SwooleApe[start.php] status 
+2019-01-17 08:20:40 SwooleApe[start.php] status 
+2019-01-17 08:20:41 SwooleApe[start.php] status 
+2019-01-17 08:20:41 SwooleApe[start.php] status 
+2019-01-17 08:20:41 SwooleApe[start.php] status 
+2019-01-17 08:20:42 SwooleApe[start.php] status 
+2019-01-17 08:20:42 SwooleApe[start.php] status 
+2019-01-17 08:20:43 SwooleApe[start.php] status 
+2019-01-17 08:20:43 SwooleApe[start.php] status 
+2019-01-17 08:20:43 SwooleApe[start.php] status 
+2019-01-17 08:20:44 SwooleApe[start.php] status 
+2019-01-17 08:20:44 SwooleApe[start.php] status 
+[2019-01-17 16:20:44 $484.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 08:20:45 SwooleApe[start.php] status 
+2019-01-17 08:20:45 SwooleApe[start.php] status 
+2019-01-17 08:20:46 SwooleApe[start.php] status 
+2019-01-17 08:20:46 SwooleApe[start.php] status 
+2019-01-17 08:20:47 SwooleApe[start.php] status 
+2019-01-17 08:20:47 SwooleApe[start.php] status 
+2019-01-17 08:20:48 SwooleApe[start.php] status 
+[2019-01-17 16:20:54 $484.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 08:23:01 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 16:23:01 @520.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 16:23:04 $521.0]	ERROR	zm_deactivate_swoole (ERROR 503): Fatal error: Uncaught Error: Cannot access private property Ape::$_workers_channel in /mnt/d/workspace/swoole_web/_lib/Ape.php:382
+Stack trace:
+#0 /mnt/d/workspace/swoole_web/_lib/Ape.php(401): exec_statisticsFile()
+#1 [internal function]: Ape::{closure}(Object(Swoole\Server))
+#2 /mnt/d/workspace/swoole_web/_lib/Ape.php(517): Swoole\Server->start()
+#3 /mnt/d/workspace/swoole_web/_lib/Ape.php(531): Ape::run()
+#4 /mnt/d/workspace/swoole_web/start.php(37): Ape::runAll()
+#5 {main}
+  thrown in /mnt/d/workspace/swoole_web/_lib/Ape.php on line 382.
+[2019-01-17 16:23:04 #520.2]	WARNING	swServer_signal_handler: Fatal Error: manager process exit. status=255, signal=[Unknown signal 0: 0].
+2019-01-17 08:23:39 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 16:23:39 @527.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 16:23:53 $528.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 08:24:32 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 16:24:32 @534.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 08:24:37 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 16:24:37 @541.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 08:24:58 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 16:24:58 @548.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 08:25:08 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 16:25:08 @555.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 08:25:10 SwooleApe[start.php] status 
+2019-01-17 08:25:10 SwooleApe[start.php] status 
+2019-01-17 08:25:11 SwooleApe[start.php] status 
+[2019-01-17 16:25:18 $556.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 08:53:24 SwooleApe[start.php] reload 
+2019-01-17 08:53:24 SwooleApe[start.php] not run
+2019-01-17 09:01:49 SwooleApe[start.php] reload 
+2019-01-17 09:01:49 SwooleApe[start.php] not run
+2019-01-17 09:01:51 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:01:51 @567.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:01:55 SwooleApe[start.php] status 
+2019-01-17 09:01:56 SwooleApe[start.php] status 
+2019-01-17 09:01:57 SwooleApe[start.php] status 
+2019-01-17 09:01:58 SwooleApe[start.php] status 
+2019-01-17 09:01:58 SwooleApe[start.php] status 
+2019-01-17 09:01:58 SwooleApe[start.php] status 
+2019-01-17 09:01:59 SwooleApe[start.php] status 
+2019-01-17 09:01:59 SwooleApe[start.php] status 
+2019-01-17 09:02:00 SwooleApe[start.php] status 
+2019-01-17 09:02:00 SwooleApe[start.php] status 
+2019-01-17 09:02:01 SwooleApe[start.php] status 
+2019-01-17 09:02:01 SwooleApe[start.php] status 
+2019-01-17 09:02:01 SwooleApe[start.php] status 
+[2019-01-17 17:02:01 $568.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 09:02:02 SwooleApe[start.php] status 
+2019-01-17 09:02:02 SwooleApe[start.php] status 
+2019-01-17 09:02:49 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:02:49 @589.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:02:57 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:02:57 @596.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:03:04 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:03:04 @603.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:03:06 SwooleApe[start.php] status 
+2019-01-17 09:03:07 SwooleApe[start.php] status 
+2019-01-17 09:03:08 SwooleApe[start.php] status 
+2019-01-17 09:03:08 SwooleApe[start.php] status 
+2019-01-17 09:03:08 SwooleApe[start.php] status 
+2019-01-17 09:03:09 SwooleApe[start.php] status 
+2019-01-17 09:03:09 SwooleApe[start.php] status 
+2019-01-17 09:03:10 SwooleApe[start.php] status 
+2019-01-17 09:18:19 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:18:19 @618.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:18:23 SwooleApe[start.php] status 
+2019-01-17 09:19:42 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:19:42 @626.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 17:19:43 $627.0]	ERROR	zm_deactivate_swoole (ERROR 503): Fatal error: Uncaught Error: Cannot access self:: when no class scope is active in /mnt/d/workspace/swoole_web/_lib/Ape.php:396
+Stack trace:
+#0 /mnt/d/workspace/swoole_web/_lib/Ape.php(400): exec_statisticsFile()
+#1 [internal function]: Ape::{closure}(Object(Swoole\Server))
+#2 /mnt/d/workspace/swoole_web/_lib/Ape.php(516): Swoole\Server->start()
+#3 /mnt/d/workspace/swoole_web/_lib/Ape.php(536): Ape::run()
+#4 /mnt/d/workspace/swoole_web/start.php(37): Ape::runAll()
+#5 {main}
+  thrown in /mnt/d/workspace/swoole_web/_lib/Ape.php on line 396.
+[2019-01-17 17:19:43 #626.2]	WARNING	swServer_signal_handler: Fatal Error: manager process exit. status=255, signal=[Unknown signal 0: 0].
+2019-01-17 09:19:59 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:19:59 @633.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:20:01 SwooleApe[start.php] status 
+2019-01-17 09:20:44 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:20:44 @641.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:21:36 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:21:36 @648.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:21:38 SwooleApe[start.php] status 
+[2019-01-17 17:21:47 $649.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 09:29:38 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:29:38 @656.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:29:40 SwooleApe[start.php] status 
+[2019-01-17 17:29:49 $657.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 09:30:03 SwooleApe[start.php] status 
+2019-01-17 09:30:03 SwooleApe[start.php] not run
+2019-01-17 09:30:05 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:30:05 @665.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:30:07 SwooleApe[start.php] status 
+[2019-01-17 17:30:17 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:30:27 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 09:30:35 SwooleApe[start.php] status 
+[2019-01-17 17:30:37 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 09:30:41 SwooleApe[start.php] status 
+[2019-01-17 17:30:47 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 09:30:56 SwooleApe[start.php] status 
+[2019-01-17 17:30:57 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 09:31:05 SwooleApe[start.php] status 
+[2019-01-17 17:31:07 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:31:17 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:31:27 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 09:31:36 SwooleApe[start.php] status 
+[2019-01-17 17:31:37 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:31:47 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:31:57 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:32:07 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:32:17 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:32:27 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:32:37 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:32:47 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:32:57 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:33:07 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:33:17 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:33:27 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:33:37 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:33:47 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:33:57 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:34:07 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:34:17 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:34:27 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:34:37 $666.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 09:34:41 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:34:41 @678.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:34:44 SwooleApe[start.php] status 
+[2019-01-17 17:34:52 $679.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:35:02 $679.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:35:12 $679.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:35:22 $679.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 09:35:27 SwooleApe[start.php] status 
+[2019-01-17 17:35:32 $679.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:35:42 $679.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:35:52 $679.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:36:02 $679.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:36:12 $679.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:36:22 $679.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:36:32 $679.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:36:42 $679.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:36:52 $679.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:37:02 $679.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:37:12 $679.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:37:22 $679.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:37:32 $679.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 09:37:41 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:37:41 @687.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:38:43 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:38:43 @694.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:39:04 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:39:04 @701.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:39:34 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:39:35 @708.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:39:41 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:39:41 @715.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:41:06 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:41:06 @722.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:42:15 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:42:15 @729.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:43:11 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:43:11 @736.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:43:35 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:43:35 @743.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:44:06 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:44:06 @750.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:45:11 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:45:11 @757.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:45:52 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:45:52 @764.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:46:11 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:46:11 @771.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:46:49 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:46:49 @778.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:47:14 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:47:14 @785.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:47:39 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:47:39 @792.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:47:55 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:47:55 @799.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:48:45 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:48:45 @806.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:49:17 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:49:17 @813.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 17:49:17 @813.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 17:49:28 $814.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:49:38 $814.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:49:48 $814.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:49:58 $814.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:50:08 $814.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:50:18 $814.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:50:28 $814.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:50:38 $814.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:50:48 $814.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:50:58 $814.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:51:08 $814.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:51:18 $814.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:51:28 $814.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:51:38 $814.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:51:48 $814.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:51:58 $814.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:52:08 $814.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 09:52:15 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:52:15 @822.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 17:52:15 @822.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+2019-01-17 09:52:24 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:52:24 @829.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 17:52:24 @829.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 17:52:35 $830.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 09:52:39 SwooleApe[start.php] status 
+2019-01-17 09:52:41 SwooleApe[start.php] status 
+[2019-01-17 17:52:45 $830.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:52:55 $830.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:53:05 $830.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+[2019-01-17 17:53:15 $830.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 09:53:24 SwooleApe[start.php] start in DEBUG mode
+[2019-01-17 17:53:24 @840.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 17:53:24 @840.0]	ERROR	swPort_listen(:122): setsockopt(TCP_FASTOPEN) failed. Error: Protocol not available[92].
+[2019-01-17 17:53:35 $841.0]	ERROR	swManager_loop(:306): wait() failed. Error: Success[0].
+2019-01-17 09:53:35 SwooleApe[start.php] status 
+2019-01-17 09:53:41 SwooleApe[start.php] stop 
+2019-01-17 09:53:41 SwooleApe[start.php] is stoping ...
+[2019-01-17 17:53:41 #840.2]	NOTICE	Server is shutdown now.
+2019-01-17 09:53:44 SwooleApe[start.php] stop success
