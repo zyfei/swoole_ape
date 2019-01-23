@@ -77,6 +77,11 @@ class Ape {
 	private static $_maxSocketNameLength;
 
 	/**
+	 * 输出了什么
+	 */
+	private static $safeEchoData = "";
+
+	/**
 	 * 配置协议stream类型
 	 */
 	protected static $_builtinTransports = array(
@@ -391,7 +396,7 @@ class Ape {
 				file_put_contents(\Ape::$_statisticsFile, json_encode(\Ape::$_globalStatistics));
 			}
 			exec_statisticsFile();
-			swoole_timer_tick(10000, function () {
+			swoole_timer_tick(3000, function () {
 				exec_statisticsFile();
 			});
 		});
@@ -419,8 +424,8 @@ class Ape {
 					\Ape::send_worker_channel("worker", $data);
 				}
 				worder_channel($server);
-				// 10秒刷新一次
-				swoole_timer_tick(10000, function () use ($server) {
+				// 3秒刷新一次
+				swoole_timer_tick(3000, function () use ($server) {
 					worder_channel($server);
 				});
 			});
@@ -687,77 +692,68 @@ class Ape {
 	 * 查看服务状态
 	 */
 	protected static function statusUI($json) {
-		$i = 0;
-		global $safeEchoNum;
-		$safeEchoNum = 0;
-		echo("\e[1;1H\e[2J");
-		while(1){
-			$i++;
-			print("\033[1;1H");
-			sleep(1);
-			var_dump($i.'\n');
-			$obj = json_decode($json, true);
-			self::safeEcho("\033[1A\n\033[K-----------------------\033[47;30m " . $obj["name"] . " \033[0m-----------------------------\n\033[0m");
-			self::safeEcho('SWOOLE version:' . swoole_version() . "          PHP version:" . PHP_VERSION . "\n");
-			foreach ($obj["listen"] as $worker) {
-				self::safeEcho("\033[47;30mlisten\033[0m    " . str_pad($worker['address'], $obj["maxSocketNameLength"] + 2) . "\n");
-			}
-			self::safeEcho('reactor_num:' . $obj["reactor_num"] . '    worker_num:' . $obj["worker_num"] . "    cpu_num:" . swoole_cpu_num() . "    all_request_count:" . $obj["request_count"] . "\n");
-			self::safeEcho("------------------------\033[47;30m WORKERS \033[0m-------------------------------\n");
-			self::safeEcho("\033[47;30mpid\033[0m" . str_pad('', 7 - strlen('pid')) . "\033[47;\033[47;30m" . 
-			//
-			"\033[47;30mtype\033[0m" . str_pad('', 10 - strlen('type')) . "\033[47;30mmemory\033[0m" . str_pad('', 8 - strlen('memory')) . 
-			//
-			"\033[47;30mstart_time\033[0m" . str_pad('', 21 - strlen('start_time')) . 
-			//
-			"\033[47;30mconn_num\033[0m" . str_pad('', 10 - strlen('conn_num')) . "\033[47;30maccept_count\033[0m" . str_pad('', 14 - strlen('accept_count')) . 
-			//
-			"\033[47;30mrequest_count\033[0m" . str_pad('', 15 - strlen('request_count')) . "\033[47;30mcoroutine_num\033[0m" . str_pad('', 14 - strlen('accept_count')) . 
-			//
-			"\033[47;\033[47;30mstatus\033[0m\n");
-			
-			foreach ($obj["dead_workers"] as $worker) {
-				$status = $worker["status"];
-				$start_date = T($status["start_time"]);
-				$worker_type = "worker";
-				if ($worker["is_taskworker"]) {
-					$worker_type = "task";
-				}
-				self::safeEcho($worker["pid"] . str_pad('', 7 - strlen($worker["pid"])) . 
-				//
-				$worker_type . str_pad('', 10 - strlen($worker_type)) . $worker["memory"] . str_pad('', 8 - strlen($worker["memory"])) . 
-				//
-				$start_date . str_pad('', 21 - strlen($start_date)) . 
-				//
-				$status["connection_num"] . str_pad('', 10 - strlen($status["connection_num"])) . $status["accept_count"] . str_pad('', 14 - strlen($status["accept_count"])) . 
-				//
-				$status["worker_request_count"] . str_pad('', 15 - strlen($status["worker_request_count"])) . $status["coroutine_num"] . str_pad('', 14 - strlen($status["coroutine_num"])) . 
-				//
-				"\033[31;40m [dead] \033[0m\n");
-			}
-			foreach ($obj["workers"] as $worker) {
-				$status = $worker["status"];
-				$start_date = T($status["start_time"]);
-				$worker_type = "worker";
-				if ($worker["is_taskworker"]) {
-					$worker_type = "task";
-				}
-				self::safeEcho($worker["pid"] . str_pad('', 7 - strlen($worker["pid"])) . 
-				//
-				$worker_type . str_pad('', 10 - strlen($worker_type)) . $worker["memory"] . str_pad('', 8 - strlen($worker["memory"])) . 
-				//
-				$start_date . str_pad('', 21 - strlen($start_date)) . 
-				//
-				$status["connection_num"] . str_pad('', 10 - strlen($status["connection_num"])) . $status["accept_count"] . str_pad('', 14 - strlen($status["accept_count"])) . 
-				//
-				$status["worker_request_count"] . str_pad('', 15 - strlen($status["worker_request_count"])) . $status["coroutine_num"] . str_pad('', 14 - strlen($status["coroutine_num"])) . 
-				//
-				"\033[32;40m [ok] \033[0m\n");
-			}
-			self::safeEcho("----------------------------------------------------------------\n");
-			self::safeEcho("Press Ctrl-C to quit.\n");
+		//echo ("\e[1;1H\e[2J");
+		//print("\033[1;1H");
+		$obj = json_decode($json, true);
+		self::safeEcho("\033[1A\n\033[K-----------------------\033[47;30m " . $obj["name"] . " \033[0m-----------------------------\n\033[0m");
+		self::safeEcho('SWOOLE version:' . swoole_version() . "          PHP version:" . PHP_VERSION . "\n");
+		foreach ($obj["listen"] as $worker) {
+			self::safeEcho("\033[47;30mlisten\033[0m    " . str_pad($worker['address'], $obj["maxSocketNameLength"] + 2) . "\n");
 		}
+		self::safeEcho('reactor_num:' . $obj["reactor_num"] . '    worker_num:' . $obj["worker_num"] . "    cpu_num:" . swoole_cpu_num() . "    all_request_count:" . $obj["request_count"] . "\n");
+		self::safeEcho("------------------------\033[47;30m WORKERS \033[0m-------------------------------\n");
+		self::safeEcho("\033[47;30mpid\033[0m" . str_pad('', 7 - strlen('pid')) . "\033[47;\033[47;30m" . 
+		//
+		"\033[47;30mtype\033[0m" . str_pad('', 10 - strlen('type')) . "\033[47;30mmemory\033[0m" . str_pad('', 8 - strlen('memory')) . 
+		//
+		"\033[47;30mstart_time\033[0m" . str_pad('', 21 - strlen('start_time')) . 
+		//
+		"\033[47;30mconn_num\033[0m" . str_pad('', 10 - strlen('conn_num')) . "\033[47;30maccept_count\033[0m" . str_pad('', 14 - strlen('accept_count')) . 
+		//
+		"\033[47;30mrequest_count\033[0m" . str_pad('', 15 - strlen('request_count')) . "\033[47;30mcoroutine_num\033[0m" . str_pad('', 14 - strlen('accept_count')) . 
+		//
+		"\033[47;\033[47;30mstatus\033[0m\n");
 		
+		foreach ($obj["dead_workers"] as $worker) {
+			$status = $worker["status"];
+			$start_date = T($status["start_time"]);
+			$worker_type = "worker";
+			if ($worker["is_taskworker"]) {
+				$worker_type = "task";
+			}
+			self::safeEcho($worker["pid"] . str_pad('', 7 - strlen($worker["pid"])) . 
+			//
+			$worker_type . str_pad('', 10 - strlen($worker_type)) . $worker["memory"] . str_pad('', 8 - strlen($worker["memory"])) . 
+			//
+			$start_date . str_pad('', 21 - strlen($start_date)) . 
+			//
+			$status["connection_num"] . str_pad('', 10 - strlen($status["connection_num"])) . $status["accept_count"] . str_pad('', 14 - strlen($status["accept_count"])) . 
+			//
+			$status["worker_request_count"] . str_pad('', 15 - strlen($status["worker_request_count"])) . $status["coroutine_num"] . str_pad('', 14 - strlen($status["coroutine_num"])) . 
+			//
+			"\033[31;40m [dead] \033[0m\n");
+		}
+		foreach ($obj["workers"] as $worker) {
+			$status = $worker["status"];
+			$start_date = T($status["start_time"]);
+			$worker_type = "worker";
+			if ($worker["is_taskworker"]) {
+				$worker_type = "task";
+			}
+			self::safeEcho($worker["pid"] . str_pad('', 7 - strlen($worker["pid"])) . 
+			//
+			$worker_type . str_pad('', 10 - strlen($worker_type)) . $worker["memory"] . str_pad('', 8 - strlen($worker["memory"])) . 
+			//
+			$start_date . str_pad('', 21 - strlen($start_date)) . 
+			//
+			$status["connection_num"] . str_pad('', 10 - strlen($status["connection_num"])) . $status["accept_count"] . str_pad('', 14 - strlen($status["accept_count"])) . 
+			//
+			$status["worker_request_count"] . str_pad('', 15 - strlen($status["worker_request_count"])) . $status["coroutine_num"] . str_pad('', 14 - strlen($status["coroutine_num"])) . 
+			//
+			"\033[32;40m [ok] \033[0m\n");
+		}
+		self::safeEcho("----------------------------------------------------------------\n");
+		self::safeEcho("Press Ctrl-C to quit.\n");
 	}
 
 	/**
@@ -768,6 +764,7 @@ class Ape {
 	 */
 	public static function safeEcho($msg) {
 		if (! function_exists('posix_isatty') || posix_isatty(STDOUT)) {
+			self::$safeEchoData = self::$safeEchoData . $msg;
 			echo $msg;
 		}
 	}
@@ -838,7 +835,27 @@ class Ape {
 				}
 				break;
 			case 'status':
-				self::statusUI(file_get_contents(self::$_statisticsFile));
+				$i = 0;
+				while (1) {
+					// 第一次
+					if ($i == 0) {
+						echo ("\e[0;0H\e[2J");
+						self::statusUI(file_get_contents(self::$_statisticsFile));
+					} else {
+						print("\033[0;0H");
+						$echo_data = explode("\n", self::$safeEchoData);
+						self::$safeEchoData = "";
+						foreach ($echo_data as $ei => $en) {
+							echo str_pad('', strlen($en)) . "\n";
+						}
+						//sleep(1);
+						print("\033[0;0H");
+						self::statusUI(file_get_contents(self::$_statisticsFile));
+					}
+					$i ++;
+					sleep(1);
+					// var_dump($i.'\n');
+				}
 				exit(0);
 			case 'restart':
 			case 'stop':
