@@ -1,5 +1,5 @@
 <?php
-namespace tofu\tag;
+namespace sama\tag;
 
 /**
  * 视图根目录

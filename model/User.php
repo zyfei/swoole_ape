@@ -1,7 +1,7 @@
 <?php
 namespace model;
 
-use tofu\db\MysqlPool;
+use sama\db\MysqlPool;
 
 class User extends MysqlPool {
 	public static $table = "t_user";

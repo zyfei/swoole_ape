@@ -1,8 +1,8 @@
 <?php
-namespace tofu\tag;
+namespace sama\tag;
 
-use tofuTo;
-use tofu\To;
+use samaSama;
+use sama\Sama;
 
 /**
  * 类拦截器
@@ -49,12 +49,12 @@ class HttpControllerTag {
 		$this->class_url = $parm;
 		
 		// 这个时候把类和方法绑定在http路由上
-		$obj = To::getBean($cla);
+		$obj = Sama::getBean($cla);
 		$ref = new \ReflectionClass($cla);
 		$methods = $ref->getMethods();
 		foreach ($methods as $k => $n) {
 			$url = $parm . "/" . $n->name;
-			To::addHttpRoute($cla, $n->name, $url);
+			Sama::addHttpRoute($cla, $n->name, $url);
 		}
 	}
 
@@ -67,7 +67,7 @@ class HttpControllerTag {
 		}
 		// 清除自动添加的方法路由
 		$new_url = $this->class_url . "/" . $parm;
-		To::updateHttpRoute($cla, $method, $new_url);
+		Sama::updateHttpRoute($cla, $method, $new_url);
 	}
 
 	/**
@@ -86,6 +86,6 @@ class HttpControllerTag {
 		// 清除自动添加的方法路由
 		$filter = array();
 		$filter["method"] = $methods;
-		To::updateHttpRoute($cla, $method, null, $filter);
+		Sama::updateHttpRoute($cla, $method, null, $filter);
 	}
 }

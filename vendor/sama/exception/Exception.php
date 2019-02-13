@@ -1,5 +1,5 @@
 <?php
-namespace tofu\exception;
+namespace sama\exception;
 
 /**
  * 简单的自定义异常类

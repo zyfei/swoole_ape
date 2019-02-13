@@ -1,8 +1,8 @@
 <?php
-namespace tofu;
+namespace sama;
 
-use tofu\db\MysqlPool;
-use tofu\tag\ViewTag;
+use sama\db\MysqlPool;
+use sama\tag\ViewTag;
 
 /**
  * 综合各类请求信息
@@ -93,7 +93,7 @@ class App {
 	}
 
 	public function view($tmp, $arr) {
-		$view = To::getBean("To.tofu.view.view");
+		$view = Sama::getBean("Sama.sama.view.view");
 		$view_tmp_dir = "";
 		if (key_exists($this->route_map['cla'], ViewTag::$view_cla_tmpdir_map)) {
 			$view_tmp_dir = RUN_DIR . DIRECTORY_SEPARATOR . ViewTag::$view_cla_tmpdir_map[$this->route_map['cla']] . DIRECTORY_SEPARATOR;

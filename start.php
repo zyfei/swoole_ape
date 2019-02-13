@@ -1,5 +1,5 @@
 <?php
-use tofu\To;
+use sama\Sama;
 
 // 引入自动加载类
 require_once 'vendor/Autoloader.php';
@@ -21,11 +21,10 @@ $config["database"] = array(
 	'max' => 5, // 数据库连接池最多连接
 	'spareTime' => 60 // 每60秒检查一次
 );
-
 // 设置配置
-To::config($config);
+Sama::config($config);
 
-To::listen("http://0.0.0.0:18080");
-To::listen("http://0.0.0.0:18081");
-To::runAll();
+Sama::listen("http://0.0.0.0:18080");
+Sama::listen("http://0.0.0.0:18081");
+Sama::runAll();
 // 后面不用写代码，不运行

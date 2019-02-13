@@ -1,8 +1,8 @@
 <?php
-namespace tofu\tag;
+namespace sama\tag;
 
-use tofuTo;
-use tofu\To;
+use samaSama;
+use sama\Sama;
 
 /**
  * 类拦截器
@@ -22,6 +22,6 @@ class MiddlewareTag {
 				unset($methods[$k]);
 			}
 		}
-		To::add_class_middleware($cla, $methods);
+		Sama::add_class_middleware($cla, $methods);
 	}
 }

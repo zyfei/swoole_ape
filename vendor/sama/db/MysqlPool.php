@@ -1,9 +1,9 @@
 <?php
-namespace tofu\db;
+namespace sama\db;
 
-use tofuTo;
-use tofu\To;
-use tofu\exception\Exception;
+use samaSama;
+use sama\Sama;
+use sama\exception\Exception;
 
 /**
  * mysql连接池
@@ -232,18 +232,18 @@ class MysqlPool extends AbstractPool {
 	 * 获取当前协程使用的mysql连接
 	 */
 	public static function getDb() {
-		return To::get_co_poll(\Co::getuid())->get_mysql();
+		return Sama::get_co_poll(\Co::getuid())->get_mysql();
 	}
 
 	private static $hasInstance = false;
 
 	public static function getInstance() {
 		if (! self::$hasInstance) {
-			if (key_exists("database", To::$_config)) {
+			if (key_exists("database", Sama::$_config)) {
 				self::$hasInstance = true;
 				self::$_instance = new MysqlPool();
-				self::$_instance->config = To::$_config["database"];
-				self::$_instance->init(To::$_config["database"]);
+				self::$_instance->config = Sama::$_config["database"];
+				self::$_instance->init(Sama::$_config["database"]);
 			} else {
 				throw new Exception("database config is null");
 			}

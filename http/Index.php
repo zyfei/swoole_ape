@@ -2,7 +2,7 @@
 namespace http;
 
 use model\User;
-use tofu\App;
+use sama\App;
 
 /**
  * @httpController(/a)
@@ -16,7 +16,7 @@ class Index {
 	 *
 	 * @method (post|get)
 	 */
-	public function aaa(\tofu\App $app) {
+	public function aaa(\sama\App $app) {
 		$app->send("hello world");
 		// $user= array();
 		// $user['id'] = 23;

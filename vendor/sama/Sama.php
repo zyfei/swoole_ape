@@ -1,14 +1,14 @@
 <?php
-namespace tofu;
+namespace sama;
 
-use tofu\App;
-use tofu\view\View;
-use tofu\exception\Exception;
+use sama\App;
+use sama\view\View;
+use sama\exception\Exception;
 
 /**
  * 高性能框架
  */
-class To {
+class Sama {
 
 	/**
 	 * 全局配置
@@ -213,32 +213,32 @@ class To {
 		 * manager进程启动
 		 */
 		self::$server->on('managerStart', function ($server) {
-			self::$_statisticsFile = sys_get_temp_dir() . '/swooleTo' . $server->master_pid . '.status';
-			swoole_set_process_name('swoole_tofu: manager process  start_file=' . self::$_startFile);
+			self::$_statisticsFile = sys_get_temp_dir() . '/swooleSama' . $server->master_pid . '.status';
+			swoole_set_process_name('swoole_sama: manager process  start_file=' . self::$_startFile);
 			sleep(1);
 			// 清空缓存
 			self::clear_storage();
 
 			// 每10秒处理一次数据
 			function exec_statisticsFile() {
-				while (To::$_workers_channel->stats()["queue_num"] > 0) {
-					$a = To::$_workers_channel->pop();
+				while (Sama::$_workers_channel->stats()["queue_num"] > 0) {
+					$a = Sama::$_workers_channel->pop();
 					if ($a["m"] == "worker") {
 						$worker = $a["data"];
-						To::$workers[$worker['pid']] = $worker;
+						Sama::$workers[$worker['pid']] = $worker;
 					}
 				}
-				foreach (To::$workers as $k => $n) {
+				foreach (Sama::$workers as $k => $n) {
 					// 如果不存活了
 					if (! \swoole_process::kill($k, 0)) {
-						To::$dead_workers[$k] = $n;
-						unset(To::$workers[$k]);
+						Sama::$dead_workers[$k] = $n;
+						unset(Sama::$workers[$k]);
 					}
 				}
-				To::$_globalStatistics["workers"] = To::$workers;
-				To::$_globalStatistics["dead_workers"] = To::$dead_workers;
-				To::$_globalStatistics["request_count"] = To::$server->stats()["request_count"];
-				file_put_contents(To::$_statisticsFile, json_encode(To::$_globalStatistics));
+				Sama::$_globalStatistics["workers"] = Sama::$workers;
+				Sama::$_globalStatistics["dead_workers"] = Sama::$dead_workers;
+				Sama::$_globalStatistics["request_count"] = Sama::$server->stats()["request_count"];
+				file_put_contents(Sama::$_statisticsFile, json_encode(Sama::$_globalStatistics));
 			}
 			exec_statisticsFile();
 			swoole_timer_tick(3000, function () {
@@ -248,9 +248,9 @@ class To {
 		self::$server->on('workerStart', function ($server, $worker_id) {
 			global $argv;
 			if ($server->taskworker) {
-				swoole_set_process_name('swoole_tofu: task_worker process  ' . $server->setting["name"] . ' ' . $server->setting["address"]);
+				swoole_set_process_name('swoole_sama: task_worker process  ' . $server->setting["name"] . ' ' . $server->setting["address"]);
 			} else {
-				swoole_set_process_name('swoole_tofu: worker process  ' . $server->setting["name"] . ' ' . $server->setting["address"]);
+				swoole_set_process_name('swoole_sama: worker process  ' . $server->setting["name"] . ' ' . $server->setting["address"]);
 			}
 			go(function () use ($server) {
 
@@ -262,7 +262,7 @@ class To {
 					$data["memory"] = round(memory_get_usage(true) / (1024 * 1024), 2) . "M";
 					$data["status"] = $server->stats();
 					// 通知manager进程(注意不是master进程)
-					To::send_worker_channel("worker", $data);
+					Sama::send_worker_channel("worker", $data);
 				}
 				worder_channel($server);
 				// 3秒刷新一次
@@ -364,7 +364,7 @@ class To {
 		// Start file.
 		$backtrace = debug_backtrace();
 		self::$_startFile = $backtrace[count($backtrace) - 1]['file'];
-		swoole_set_process_name('swoole_tofu: master process  start_file=' . self::$_startFile);
+		swoole_set_process_name('swoole_sama: master process  start_file=' . self::$_startFile);
 		// 创建队列,最大1024个容量
 		self::$_workers_channel = new \Swoole\Channel(1024);
 		self::$workers = array();
@@ -835,21 +835,21 @@ class To {
 				$mode = 'in DEBUG mode';
 			}
 		}
-		self::log("SwooleTo[$start_file] $command $mode");
+		self::log("SwooleSama[$start_file] $command $mode");
 		
 		$master_pid = @file_get_contents(self::$_config["pid_file"]);
 		$master_is_alive = $master_pid && @\swoole_process::kill($master_pid, 0);
 		// 判断是否已经在运行
 		if ($master_is_alive) {
 			if ($command === 'start') {
-				self::log("SwooleTo[$start_file] already running");
+				self::log("SwooleSama[$start_file] already running");
 				exit();
 			}
 		} elseif ($command !== 'start' && $command !== 'restart') {
-			self::log("SwooleTo[$start_file] not run");
+			self::log("SwooleSama[$start_file] not run");
 			exit();
 		}
-		self::$_statisticsFile = sys_get_temp_dir() . '/swooleTo' . $master_pid . '.status';
+		self::$_statisticsFile = sys_get_temp_dir() . '/swooleSama' . $master_pid . '.status';
 		// execute command.
 		switch ($command) {
 			case 'start':
@@ -882,7 +882,7 @@ class To {
 				exit(0);
 			case 'restart':
 			case 'stop':
-				self::log("SwooleTo[$start_file] is stoping ...");
+				self::log("SwooleSama[$start_file] is stoping ...");
 				// 发送停止信号
 				$master_pid && swoole_process::kill($master_pid, SIGTERM);
 				// Timeout.
@@ -894,7 +894,7 @@ class To {
 					if ($master_is_alive) {
 						// Timeout?
 						if (time() - $start_time >= $timeout) {
-							self::log("SwooleTo[$start_file] stop fail");
+							self::log("SwooleSama[$start_file] stop fail");
 							exit();
 						}
 						// Waiting amoment.
@@ -902,7 +902,7 @@ class To {
 						continue;
 					}
 					// Stop success.
-					self::log("SwooleTo[$start_file] stop success");
+					self::log("SwooleSama[$start_file] stop success");
 					if ($command === 'stop') {
 						exit(0);
 					}
@@ -914,7 +914,7 @@ class To {
 				break;
 			case 'reload':
 				swoole_process::kill($master_pid, SIGUSR1);
-				self::log("SwooleTo[$start_file] reload");
+				self::log("SwooleSama[$start_file] reload");
 				exit();
 			default:
 				exit("Usage: php yourfile.php {start|stop|restart|reload|status}\n");
