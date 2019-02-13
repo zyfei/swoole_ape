@@ -1,5 +1,8 @@
 <?php
-namespace ape\tag;
+namespace tofu\tag;
+
+use tofuTo;
+use tofu\To;
 
 /**
  * 类拦截器
@@ -19,6 +22,6 @@ class MiddlewareTag {
 				unset($methods[$k]);
 			}
 		}
-		\Ape::add_class_middleware($cla, $methods);
+		To::add_class_middleware($cla, $methods);
 	}
 }

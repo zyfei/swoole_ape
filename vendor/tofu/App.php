@@ -1,8 +1,8 @@
 <?php
-namespace ape;
+namespace tofu;
 
-use ape\db\MysqlPool;
-use ape\tag\ViewTag;
+use tofu\db\MysqlPool;
+use tofu\tag\ViewTag;
 
 /**
  * 综合各类请求信息
@@ -93,10 +93,10 @@ class App {
 	}
 
 	public function view($tmp, $arr) {
-		$view = \Ape::getBean("ape.view.view");
+		$view = To::getBean("To.tofu.view.view");
 		$view_tmp_dir = "";
 		if (key_exists($this->route_map['cla'], ViewTag::$view_cla_tmpdir_map)) {
-			$view_tmp_dir = RUN_DIR . DIRECTORY_SEPARATOR . ViewTag::$view_cla_tmpdir_map[$this->route_map['cla']].DIRECTORY_SEPARATOR;
+			$view_tmp_dir = RUN_DIR . DIRECTORY_SEPARATOR . ViewTag::$view_cla_tmpdir_map[$this->route_map['cla']] . DIRECTORY_SEPARATOR;
 		}
 		return $view->view($this, $view_tmp_dir, $tmp, $arr);
 	}

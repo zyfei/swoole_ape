@@ -1,5 +1,5 @@
 <?php
-namespace ape\db;
+namespace tofu\db;
 
 use Swoole\Coroutine\Channel;
 

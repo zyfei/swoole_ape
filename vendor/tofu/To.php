@@ -1,17 +1,26 @@
 <?php
-use model\User;
-use ape\App;
-use ape\view\View;
+namespace tofu;
+
+use tofu\App;
+use tofu\view\View;
+use tofu\exception\Exception;
 
 /**
  * 高性能框架
  */
-class Ape {
+class To {
 
 	/**
 	 * 全局配置
 	 */
 	public static $_config = null;
+
+	/**
+	 * 启动文件位置
+	 *
+	 * @var string
+	 */
+	private static $_startFile = "";
 
 	/**
 	 * 主server实例
@@ -121,184 +130,14 @@ class Ape {
 	 * 初始化框架
 	 */
 	public static function config($config = array()) {
-		self::$_config = require_once '_lib/config.php';
+		// 引入标准配置文件
+		if (self::$_config == null) {
+			require_once 'helper.php';
+			self::$_config = require_once 'config.php';
+		}
+		// 使用新配置
 		foreach ($config as $k2 => $n2) {
 			self::$_config[$k2] = $n2;
-		}
-	}
-
-	private static function create_beans() {
-		// 创建bean
-		foreach (self::$_need_load_class_arr as $obj) {
-			$ref = new ReflectionClass($obj);
-			$class_tag = $ref->getDocComment();
-			$class_tag = preg_replace('# #', '', $class_tag);
-			$k2 = "bean";
-			$preg = '/\@' . $k2 . '\([\s\S]*?\)/';
-			preg_match_all($preg, $class_tag, $class_tag_arr);
-			$class_tag_arr = $class_tag_arr[0];
-			if (count($class_tag_arr) <= 0) {
-				$preg = '/\@' . $k2 . '[\s\S]*?/';
-				preg_match_all($preg, $class_tag, $class_tag_arr2);
-				$class_tag_arr2 = $class_tag_arr2[0];
-				if (count($class_tag_arr2) > 0) {
-					$class_tag_arr[] = "@" . $k2 . "()";
-				}
-			}
-			foreach ($class_tag_arr as $n) {
-				$rn = 0;
-				$pram = str_replace("@" . $k2 . "(", "", $n, $rn);
-				if ($rn == 0) {
-					$pram = null;
-				} else {
-					$pram = substr($pram, 0, strlen($pram) - 1);
-				}
-				// 已经匹配到了，进入Taq类里面执行操作
-				// self::getBean("__need_load_class_arr_" . $k2)->$k2($obj, $pram);
-				if ($pram == "") {
-					$pram = $obj;
-				}
-				self::addBean($pram, $obj);
-			}
-		}
-	}
-
-	/**
-	 * 获取所有标签声明
-	 */
-	private static function create_tags() {
-		$tags = require_once RUN_DIR . '/_lib/ape/tag/tags.php';
-		$tag_methods = array();
-		foreach ($tags as $k => $n) {
-			$bean_name = "__need_load_class_arr_" . $k;
-			self::addBean($bean_name, $n);
-			$class2 = new \ReflectionClass($n);
-			$methods2 = $class2->getMethods();
-			$class_tag = array();
-			foreach ($methods2 as $k2 => $n2) {
-				$class_tag[] = $n2->name;
-			}
-			$tag_methods[$k] = $class_tag;
-		}
-		self::$class_tags = $tag_methods;
-		foreach (self::$_need_load_class_arr as $n) {
-			self::loadClassTag($n);
-		}
-	}
-
-	/**
-	 * 读取所有的php文件
-	 */
-	private static function loadPhpFiles() {
-		$dir_iterator = new RecursiveDirectoryIterator(RUN_DIR);
-		$iterator = new RecursiveIteratorIterator($dir_iterator);
-		foreach ($iterator as $file) {
-			// only check php files
-			if (pathinfo($file, PATHINFO_EXTENSION) != 'php') {
-				continue;
-			}
-			$namespace = str_replace(RUN_DIR, "", $file->getPath());
-			$namespace = str_replace(DIRECTORY_SEPARATOR . Autoloader::$_libPath, "", $namespace);
-			
-			$file_name = (string) $file;
-			$contents = file_get_contents($file_name);
-			$preg = '/class [\s\S]*? /';
-			preg_match_all($preg, $contents, $res);
-			foreach ($res[0] as $k => $n) {
-				$className = trim(get_between($n, "class ", ' '));
-				$className = $namespace . DIRECTORY_SEPARATOR . $className;
-				$className = substr($className, 1);
-				// 判断是否是类并加载
-				if ($k == 0) {
-					if (! Autoloader::loadByNamespace($className)) {
-						break;
-					}
-				} else {
-					// 判断是否存在class
-					if (! class_exists("\\" . str_replace(DIRECTORY_SEPARATOR, "\\", $className), false)) {
-						break;
-					}
-				}
-				self::$_need_load_class_arr[] = "\\" . str_replace(DIRECTORY_SEPARATOR, "\\", $className);
-			}
-		}
-	}
-
-	/**
-	 * 读取并解析类的注释。不读取静态方法
-	 */
-	private static function loadClassTag($obj) {
-		$ref = new ReflectionClass($obj);
-		$class_tag = $ref->getDocComment();
-		$class_tag = preg_replace('# #', '', $class_tag);
-		foreach (self::$class_tags as $k2 => $n2) {
-			$preg = '/\@' . $k2 . '\([\s\S]*?\)/';
-			preg_match_all($preg, $class_tag, $class_tag_arr);
-			$class_tag_arr = $class_tag_arr[0];
-			if (count($class_tag_arr) <= 0) {
-				$preg = '/\@' . $k2 . '[\s\S]*?/';
-				preg_match_all($preg, $class_tag, $class_tag_arr2);
-				$class_tag_arr2 = $class_tag_arr2[0];
-				if (count($class_tag_arr2) > 0) {
-					$class_tag_arr[] = "@" . $k2 . "()";
-				}
-			}
-			foreach ($class_tag_arr as $n) {
-				if (! self::hasBean($obj)) {
-					self::addBean($obj, $obj);
-				}
-				$rn = 0;
-				$pram = str_replace("@" . $k2 . "(", "", $n, $rn);
-				if ($rn == 0) {
-					$pram = null;
-				} else {
-					$pram = substr($pram, 0, strlen($pram) - 1);
-				}
-				// 已经匹配到了，进入Taq类里面执行操作
-				self::getBean("__need_load_class_arr_" . $k2)->$k2($obj, $pram);
-				// 接下来解析方法
-				self::loadMethodTag($k2, $obj);
-			}
-		}
-	}
-
-	/**
-	 * 加载方法注释
-	 * 将符合规定的注释返回
-	 */
-	public static function loadMethodTag($_need_load_class_arr_tag, $class_tag) {
-		$ref = new ReflectionClass(self::getBean($class_tag));
-		$methods = $ref->getMethods();
-		if ($methods) {
-			foreach ($methods as $method) {
-				$tag = $method->getDocComment();
-				$tag = preg_replace('# #', '', $tag);
-				foreach (self::$class_tags[$_need_load_class_arr_tag] as $k2 => $n2) {
-					$preg = '/\@' . $n2 . '\([\s\S]*?\)/';
-					preg_match_all($preg, $tag, $method_tag_arr);
-					$method_tag_arr = $method_tag_arr[0];
-					if (count($method_tag_arr) <= 0) {
-						$preg = '/\@' . $n2 . '[\s\S]*?/';
-						preg_match_all($preg, $tag, $method_tag_arr2);
-						$method_tag_arr2 = $method_tag_arr2[0];
-						if (count($method_tag_arr2) > 0) {
-							$method_tag_arr[] = "@" . $n2 . "()";
-						}
-					}
-					
-					foreach ($method_tag_arr as $n) {
-						$rn = 0;
-						$pram = str_replace("@" . $n2 . "(", "", $n, $rn);
-						if ($rn == 0) {
-							$pram = null;
-						} else {
-							$pram = substr($pram, 0, strlen($pram) - 1);
-						}
-						// 已经匹配到了，进入Taq类里面执行操作
-						self::getBean("__need_load_class_arr_" . $_need_load_class_arr_tag)->$n2($class_tag, $method->name, $pram);
-					}
-				}
-			}
 		}
 	}
 
@@ -306,21 +145,23 @@ class Ape {
 	 * 添加监听
 	 */
 	public static function listen($address = null, $config = array()) {
+		// 引入标准配置文件
 		if (self::$_config == null) {
-			self::$_config = require_once '_lib/config.php';
+			require_once 'helper.php';
+			self::$_config = require_once 'config.php';
 		}
 		if ($address === null) {
-			throw new \Exception('address is null');
+			throw new Exception('address is null');
 		}
 		$address_info = parse_url($address);
 		if (! isset($address_info['scheme'])) {
-			throw new \Exception('scheme is null');
+			throw new Exception('scheme is null');
 		}
 		if (! isset($address_info['port'])) {
 			$address_info['port'] = 80;
 		}
 		if (! key_exists($address_info['scheme'], self::$_builtinTransports)) {
-			throw new \Exception('not support ' . $address_info['scheme']);
+			throw new Exception('not support ' . $address_info['scheme']);
 		}
 		// 添加到worker中去
 		$worker = array();
@@ -344,11 +185,11 @@ class Ape {
 	 */
 	public static function run() {
 		if (count(self::$_init_workers) <= 0) {
-			throw new \Exception('address is null');
+			throw new Exception('address is null');
 		}
 		foreach (self::$_init_workers as $k => $n) {
 			if ($k == 0) {
-				self::$server = new swoole_server($n["host"], $n["port"], self::$_config["server_mode"], self::$_builtinTransports[$n["scheme"]]);
+				self::$server = new \swoole_server($n["host"], $n["port"], self::$_config["server_mode"], self::$_builtinTransports[$n["scheme"]]);
 				$config = self::$_config;
 				foreach (self::$_builtinConfigs[$n["scheme"]] as $k2 => $n2) {
 					$config[$k2] = $n2;
@@ -356,12 +197,14 @@ class Ape {
 				foreach ($n["config"] as $k2 => $n2) {
 					$config[$k2] = $n2;
 				}
+				$config["address"] = $n["address"];
 				self::$server->set($config);
 			} else {
 				$config = self::$_builtinConfigs[$n["scheme"]];
 				foreach ($n["config"] as $k2 => $n2) {
 					$config[$k2] = $n2;
 				}
+				$config["address"] = $n["address"];
 				$s2 = self::$server->addListener($n["host"], $n["port"], self::$_builtinTransports[$n["scheme"]])->set($config);
 			}
 		}
@@ -370,30 +213,32 @@ class Ape {
 		 * manager进程启动
 		 */
 		self::$server->on('managerStart', function ($server) {
-			self::$_statisticsFile = sys_get_temp_dir() . '/swooleape' . $server->master_pid . '.status';
-			swoole_set_process_name('swoole_ape: manager process');
+			self::$_statisticsFile = sys_get_temp_dir() . '/swooleTo' . $server->master_pid . '.status';
+			swoole_set_process_name('swoole_tofu: manager process  start_file=' . self::$_startFile);
 			sleep(1);
+			// 清空缓存
+			self::clear_storage();
 
 			// 每10秒处理一次数据
 			function exec_statisticsFile() {
-				while (\Ape::$_workers_channel->stats()["queue_num"] > 0) {
-					$a = \Ape::$_workers_channel->pop();
+				while (To::$_workers_channel->stats()["queue_num"] > 0) {
+					$a = To::$_workers_channel->pop();
 					if ($a["m"] == "worker") {
 						$worker = $a["data"];
-						\Ape::$workers[$worker['pid']] = $worker;
+						To::$workers[$worker['pid']] = $worker;
 					}
 				}
-				foreach (\Ape::$workers as $k => $n) {
+				foreach (To::$workers as $k => $n) {
 					// 如果不存活了
-					if (! swoole_process::kill($k, 0)) {
-						\Ape::$dead_workers[$k] = $n;
-						unset(\Ape::$workers[$k]);
+					if (! \swoole_process::kill($k, 0)) {
+						To::$dead_workers[$k] = $n;
+						unset(To::$workers[$k]);
 					}
 				}
-				\Ape::$_globalStatistics["workers"] = \Ape::$workers;
-				\Ape::$_globalStatistics["dead_workers"] = \Ape::$dead_workers;
-				\Ape::$_globalStatistics["request_count"] = \Ape::$server->stats()["request_count"];
-				file_put_contents(\Ape::$_statisticsFile, json_encode(\Ape::$_globalStatistics));
+				To::$_globalStatistics["workers"] = To::$workers;
+				To::$_globalStatistics["dead_workers"] = To::$dead_workers;
+				To::$_globalStatistics["request_count"] = To::$server->stats()["request_count"];
+				file_put_contents(To::$_statisticsFile, json_encode(To::$_globalStatistics));
 			}
 			exec_statisticsFile();
 			swoole_timer_tick(3000, function () {
@@ -403,13 +248,9 @@ class Ape {
 		self::$server->on('workerStart', function ($server, $worker_id) {
 			global $argv;
 			if ($server->taskworker) {
-				swoole_set_process_name('swoole_ape: task_worker process  ' . self::$_config["name"]);
+				swoole_set_process_name('swoole_tofu: task_worker process  ' . $server->setting["name"] . ' ' . $server->setting["address"]);
 			} else {
-				swoole_set_process_name('swoole_ape: worker process  ' . self::$_config["name"]);
-			}
-			// 清空缓存
-			if ($worker_id == 0) {
-				View::clear();
+				swoole_set_process_name('swoole_tofu: worker process  ' . $server->setting["name"] . ' ' . $server->setting["address"]);
 			}
 			go(function () use ($server) {
 
@@ -421,7 +262,7 @@ class Ape {
 					$data["memory"] = round(memory_get_usage(true) / (1024 * 1024), 2) . "M";
 					$data["status"] = $server->stats();
 					// 通知manager进程(注意不是master进程)
-					\Ape::send_worker_channel("worker", $data);
+					To::send_worker_channel("worker", $data);
 				}
 				worder_channel($server);
 				// 3秒刷新一次
@@ -445,7 +286,7 @@ class Ape {
 			$app = new App();
 			$app->setHttp($request, $response);
 			self::add_co_poll(\Co::getuid(), $app);
-			// 升级到最新版终于致辞defer了
+			// 升级到最新版终于支持defer了
 			defer(function () use ($app) {
 				// 在这里回收mysql资源以及一些其他操作
 				$app->free_mysql();
@@ -510,9 +351,22 @@ class Ape {
 	}
 
 	public static function runAll() {
-		swoole_set_process_name('swoole_ape: master process');
+		self::init();
+		self::parseCommand();
+		self::loadPhpFiles();
+		self::create_beans();
+		self::create_tags();
+		self::displayUI();
+		self::run();
+	}
+
+	private static function init() {
+		// Start file.
+		$backtrace = debug_backtrace();
+		self::$_startFile = $backtrace[count($backtrace) - 1]['file'];
+		swoole_set_process_name('swoole_tofu: master process  start_file=' . self::$_startFile);
 		// 创建队列,最大1024个容量
-		self::$_workers_channel = new Swoole\Channel(1024);
+		self::$_workers_channel = new \Swoole\Channel(1024);
 		self::$workers = array();
 		self::$_globalStatistics['name'] = self::$_config["name"];
 		self::$_globalStatistics['start_time'] = time();
@@ -520,12 +374,181 @@ class Ape {
 		self::$_globalStatistics['worker_num'] = self::$_config["worker_num"];
 		self::$_globalStatistics['listen'] = self::$_init_workers;
 		self::$_globalStatistics['maxSocketNameLength'] = self::$_maxSocketNameLength;
-		self::parseCommand();
-		self::loadPhpFiles();
-		self::create_beans();
-		self::create_tags();
-		self::displayUI();
-		self::run();
+	}
+
+	private static function create_beans() {
+		// 创建bean
+		foreach (self::$_need_load_class_arr as $obj) {
+			$ref = new \ReflectionClass($obj);
+			$class_tag = $ref->getDocComment();
+			$class_tag = preg_replace('# #', '', $class_tag);
+			$k2 = "bean";
+			$preg = '/\@' . $k2 . '\([\s\S]*?\)/';
+			preg_match_all($preg, $class_tag, $class_tag_arr);
+			$class_tag_arr = $class_tag_arr[0];
+			if (count($class_tag_arr) <= 0) {
+				$preg = '/\@' . $k2 . '[\s\S]*?/';
+				preg_match_all($preg, $class_tag, $class_tag_arr2);
+				$class_tag_arr2 = $class_tag_arr2[0];
+				if (count($class_tag_arr2) > 0) {
+					$class_tag_arr[] = "@" . $k2 . "()";
+				}
+			}
+			foreach ($class_tag_arr as $n) {
+				$rn = 0;
+				$pram = str_replace("@" . $k2 . "(", "", $n, $rn);
+				if ($rn == 0) {
+					$pram = null;
+				} else {
+					$pram = substr($pram, 0, strlen($pram) - 1);
+				}
+				// 已经匹配到了，进入Taq类里面执行操作
+				// self::getBean("__need_load_class_arr_" . $k2)->$k2($obj, $pram);
+				if ($pram == "") {
+					$pram = $obj;
+				}
+				self::addBean($pram, $obj);
+			}
+		}
+	}
+
+	/**
+	 * 获取所有标签声明
+	 */
+	private static function create_tags() {
+		$tags = require_once 'tag/tags.php';
+		$tag_methods = array();
+		foreach ($tags as $k => $n) {
+			$bean_name = "__need_load_class_arr_" . $k;
+			self::addBean($bean_name, $n);
+			$class2 = new \ReflectionClass($n);
+			$methods2 = $class2->getMethods();
+			$class_tag = array();
+			foreach ($methods2 as $k2 => $n2) {
+				$class_tag[] = $n2->name;
+			}
+			$tag_methods[$k] = $class_tag;
+		}
+		self::$class_tags = $tag_methods;
+		foreach (self::$_need_load_class_arr as $n) {
+			self::loadClassTag($n);
+		}
+	}
+
+	/**
+	 * 读取所有的php文件
+	 */
+	private static function loadPhpFiles() {
+		$dir_iterator = new \RecursiveDirectoryIterator(RUN_DIR);
+		$iterator = new \RecursiveIteratorIterator($dir_iterator);
+		foreach ($iterator as $file) {
+			// only check php files
+			if (pathinfo($file, PATHINFO_EXTENSION) != 'php') {
+				continue;
+			}
+			$namespace = str_replace(RUN_DIR . DIRECTORY_SEPARATOR, "", $file->getPath());
+			$namespace = str_replace(\Autoloader::$_vendorPath . DIRECTORY_SEPARATOR, "", $namespace);
+			// 203行加了一个DIRECTORY_SEPARATOR，现在问题是Autoloader不太好使
+			$file_name = (string) $file;
+			$contents = file_get_contents($file_name);
+			$preg = '/class [\s\S]*? /';
+			preg_match_all($preg, $contents, $res);
+			foreach ($res[0] as $k => $n) {
+				$className = trim(get_between($n, "class ", ' '));
+				$className = $namespace . DIRECTORY_SEPARATOR . $className;
+				// dd($className);
+				// 判断是否是类并加载
+				if ($k == 0) {
+					if (! \Autoloader::loadByNamespace($className)) {
+						break;
+					}
+				} else {
+					// 判断是否存在class
+					if (! class_exists("\\" . str_replace(DIRECTORY_SEPARATOR, "\\", $className), false)) {
+						break;
+					}
+				}
+				self::$_need_load_class_arr[] = "\\" . str_replace(DIRECTORY_SEPARATOR, "\\", $className);
+			}
+		}
+	}
+
+	/**
+	 * 读取并解析类的注释。不读取静态方法
+	 */
+	private static function loadClassTag($obj) {
+		$ref = new \ReflectionClass($obj);
+		$class_tag = $ref->getDocComment();
+		$class_tag = preg_replace('# #', '', $class_tag);
+		foreach (self::$class_tags as $k2 => $n2) {
+			$preg = '/\@' . $k2 . '\([\s\S]*?\)/';
+			preg_match_all($preg, $class_tag, $class_tag_arr);
+			$class_tag_arr = $class_tag_arr[0];
+			if (count($class_tag_arr) <= 0) {
+				$preg = '/\@' . $k2 . '[\s\S]*?/';
+				preg_match_all($preg, $class_tag, $class_tag_arr2);
+				$class_tag_arr2 = $class_tag_arr2[0];
+				if (count($class_tag_arr2) > 0) {
+					$class_tag_arr[] = "@" . $k2 . "()";
+				}
+			}
+			foreach ($class_tag_arr as $n) {
+				if (! self::hasBean($obj)) {
+					self::addBean($obj, $obj);
+				}
+				$rn = 0;
+				$pram = str_replace("@" . $k2 . "(", "", $n, $rn);
+				if ($rn == 0) {
+					$pram = null;
+				} else {
+					$pram = substr($pram, 0, strlen($pram) - 1);
+				}
+				// 已经匹配到了，进入Taq类里面执行操作
+				self::getBean("__need_load_class_arr_" . $k2)->$k2($obj, $pram);
+				// 接下来解析方法
+				self::loadMethodTag($k2, $obj);
+			}
+		}
+	}
+
+	/**
+	 * 加载方法注释
+	 * 将符合规定的注释返回
+	 */
+	public static function loadMethodTag($_need_load_class_arr_tag, $class_tag) {
+		$ref = new \ReflectionClass(self::getBean($class_tag));
+		$methods = $ref->getMethods();
+		if ($methods) {
+			foreach ($methods as $method) {
+				$tag = $method->getDocComment();
+				$tag = preg_replace('# #', '', $tag);
+				foreach (self::$class_tags[$_need_load_class_arr_tag] as $k2 => $n2) {
+					$preg = '/\@' . $n2 . '\([\s\S]*?\)/';
+					preg_match_all($preg, $tag, $method_tag_arr);
+					$method_tag_arr = $method_tag_arr[0];
+					if (count($method_tag_arr) <= 0) {
+						$preg = '/\@' . $n2 . '[\s\S]*?/';
+						preg_match_all($preg, $tag, $method_tag_arr2);
+						$method_tag_arr2 = $method_tag_arr2[0];
+						if (count($method_tag_arr2) > 0) {
+							$method_tag_arr[] = "@" . $n2 . "()";
+						}
+					}
+					
+					foreach ($method_tag_arr as $n) {
+						$rn = 0;
+						$pram = str_replace("@" . $n2 . "(", "", $n, $rn);
+						if ($rn == 0) {
+							$pram = null;
+						} else {
+							$pram = substr($pram, 0, strlen($pram) - 1);
+						}
+						// 已经匹配到了，进入Taq类里面执行操作
+						self::getBean("__need_load_class_arr_" . $_need_load_class_arr_tag)->$n2($class_tag, $method->name, $pram);
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -574,7 +597,7 @@ class Ape {
 			return false;
 		}
 		
-		$c = (new ReflectionClass($cla))->newInstanceWithoutConstructor();
+		$c = (new \ReflectionClass($cla))->newInstanceWithoutConstructor();
 		if (method_exists($c, "__construct")) {
 			if ($args != null) {
 				call_user_func_array(array(
@@ -692,8 +715,8 @@ class Ape {
 	 * 查看服务状态
 	 */
 	protected static function statusUI($json) {
-		//echo ("\e[1;1H\e[2J");
-		//print("\033[1;1H");
+		// echo ("\e[1;1H\e[2J");
+		// print("\033[1;1H");
 		$obj = json_decode($json, true);
 		self::safeEcho("\033[1A\n\033[K-----------------------\033[47;30m " . $obj["name"] . " \033[0m-----------------------------\n\033[0m");
 		self::safeEcho('SWOOLE version:' . swoole_version() . "          PHP version:" . PHP_VERSION . "\n");
@@ -812,21 +835,21 @@ class Ape {
 				$mode = 'in DEBUG mode';
 			}
 		}
-		self::log("SwooleApe[$start_file] $command $mode");
+		self::log("SwooleTo[$start_file] $command $mode");
 		
 		$master_pid = @file_get_contents(self::$_config["pid_file"]);
-		$master_is_alive = $master_pid && @swoole_process::kill($master_pid, 0);
+		$master_is_alive = $master_pid && @\swoole_process::kill($master_pid, 0);
 		// 判断是否已经在运行
 		if ($master_is_alive) {
 			if ($command === 'start') {
-				self::log("SwooleApe[$start_file] already running");
+				self::log("SwooleTo[$start_file] already running");
 				exit();
 			}
 		} elseif ($command !== 'start' && $command !== 'restart') {
-			self::log("SwooleApe[$start_file] not run");
+			self::log("SwooleTo[$start_file] not run");
 			exit();
 		}
-		self::$_statisticsFile = sys_get_temp_dir() . '/swooleape' . $master_pid . '.status';
+		self::$_statisticsFile = sys_get_temp_dir() . '/swooleTo' . $master_pid . '.status';
 		// execute command.
 		switch ($command) {
 			case 'start':
@@ -848,7 +871,7 @@ class Ape {
 						foreach ($echo_data as $ei => $en) {
 							echo str_pad('', strlen($en)) . "\n";
 						}
-						//sleep(1);
+						// sleep(1);
 						print("\033[0;0H");
 						self::statusUI(file_get_contents(self::$_statisticsFile));
 					}
@@ -859,7 +882,7 @@ class Ape {
 				exit(0);
 			case 'restart':
 			case 'stop':
-				self::log("SwooleApe[$start_file] is stoping ...");
+				self::log("SwooleTo[$start_file] is stoping ...");
 				// 发送停止信号
 				$master_pid && swoole_process::kill($master_pid, SIGTERM);
 				// Timeout.
@@ -871,7 +894,7 @@ class Ape {
 					if ($master_is_alive) {
 						// Timeout?
 						if (time() - $start_time >= $timeout) {
-							self::log("SwooleApe[$start_file] stop fail");
+							self::log("SwooleTo[$start_file] stop fail");
 							exit();
 						}
 						// Waiting amoment.
@@ -879,7 +902,7 @@ class Ape {
 						continue;
 					}
 					// Stop success.
-					self::log("SwooleApe[$start_file] stop success");
+					self::log("SwooleTo[$start_file] stop success");
 					if ($command === 'stop') {
 						exit(0);
 					}
@@ -891,7 +914,7 @@ class Ape {
 				break;
 			case 'reload':
 				swoole_process::kill($master_pid, SIGUSR1);
-				self::log("SwooleApe[$start_file] reload");
+				self::log("SwooleTo[$start_file] reload");
 				exit();
 			default:
 				exit("Usage: php yourfile.php {start|stop|restart|reload|status}\n");
@@ -903,5 +926,12 @@ class Ape {
 		$a["m"] = $method;
 		$a["data"] = $data;
 		self::$_workers_channel->push($a);
+	}
+
+	/**
+	 * 清除缓存
+	 */
+	private static function clear_storage() {
+		View::clear();
 	}
 }

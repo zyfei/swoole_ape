@@ -4,7 +4,7 @@
  * https://wiki.swoole.com/wiki/page/274.html
  */
 return array(
-	"name" => "SWOOLE_APE",
+	"name" => "SWOOLE_To",
 	
 	// 是否开启守护进程,默认不开启
 	"daemonize" => 0,

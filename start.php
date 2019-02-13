@@ -1,13 +1,8 @@
 <?php
-// 将PHP提供的stream、sleep、pdo、mysqli、redis等功能从同步阻塞切换为协程的异步IO
-\Swoole\Runtime::enableCoroutine();
+use tofu\To;
 
-// 根目录
-define('RUN_DIR', __DIR__);
 // 引入自动加载类
-require_once '_lib/Autoloader.php';
-require_once '_lib/helper.php';
-
+require_once 'vendor/Autoloader.php';
 /**
  * 这个config是全局配置。默认配置在_lib下的config.php中
  */
@@ -28,11 +23,9 @@ $config["database"] = array(
 );
 
 // 设置配置
-Ape::config($config);
+To::config($config);
 
-Ape::listen("http://0.0.0.0:18080");
-// 开启服务
-Ape::listen("http://0.0.0.0:18081");
-//Ape::listen("udp://0.0.0.0:18082");
-Ape::runAll();
+To::listen("http://0.0.0.0:18080");
+To::listen("http://0.0.0.0:18081");
+To::runAll();
 // 后面不用写代码，不运行

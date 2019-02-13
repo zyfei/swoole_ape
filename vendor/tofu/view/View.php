@@ -1,8 +1,10 @@
 <?php
-namespace ape\view;
+namespace tofu\view;
+
+use tofu\To;
 
 /**
- * @bean(ape.view.view)
+ * @bean(To.tofu.view.view)
  */
 class View {
 
@@ -74,7 +76,7 @@ class View {
 		$text = preg_replace($pattern, $replacement, $text);
 		
 		// create compile file //
-		$compliefile = time() . random(10) . "_" . \Ape::$server->worker_pid . ".tmp";
+		$compliefile = time() . random(10) . "_" . To::$server->worker_pid . ".tmp";
 		if ($fp = @fopen($this->compiledir . $compliefile, 'w')) {
 			fputs($fp, $text);
 			fclose($fp);
@@ -155,8 +157,8 @@ class View {
 	}
 
 	public function __construct() {
-		$this->compileDir(RUN_DIR . \Ape::$_config['view_storage_dir']);
-		$this->templateDir(RUN_DIR . \Ape::$_config['view_template_dir']);
+		$this->compileDir(RUN_DIR . To::$_config['view_storage_dir']);
+		$this->templateDir(RUN_DIR . To::$_config['view_template_dir']);
 	}
 
 	/**
@@ -177,7 +179,7 @@ class View {
 	 * 清空模板缓存
 	 */
 	public static function clear() {
-		foreach (glob(self::pathCheck(\Ape::$_config['view_storage_dir']) . '*.tmp') as $start_file) {
+		foreach (glob(self::pathCheck(To::$_config['view_storage_dir']) . '*.tmp') as $start_file) {
 			unlink($start_file);
 		}
 	}

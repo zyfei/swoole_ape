@@ -79,8 +79,8 @@ function fun($f) {
 
 // 返回js的alert脚本
 function alert($str) {
-	ApeWeb::$SEND_BODY = ApeWeb::$SEND_BODY . "<meta content='text/html; charset=utf-8' http-equiv='Content-Type'>";
-	ApeWeb::$SEND_BODY = ApeWeb::$SEND_BODY . "<script>alert('" . $str . "');</script>";
+	ToWeb::$SEND_BODY = ToWeb::$SEND_BODY . "<meta content='text/html; charset=utf-8' http-equiv='Content-Type'>";
+	ToWeb::$SEND_BODY = ToWeb::$SEND_BODY . "<script>alert('" . $str . "');</script>";
 	return true;
 }
 
@@ -88,18 +88,18 @@ function alert($str) {
  * 返回上一页的js脚本
  */
 function history_back() {
-	ApeWeb::$SEND_BODY = ApeWeb::$SEND_BODY . "<script>history.back();</script>";
+	ToWeb::$SEND_BODY = ToWeb::$SEND_BODY . "<script>history.back();</script>";
 }
 
 // 重定向方法,url需要传递相对于views的路径
 function R($url, $arr = array()) {
 	$en = strpos($url, "http");
 	if ($en !== 0) {
-		$url = ApeWeb::$MODULE_URL . $url;
+		$url = ToWeb::$MODULE_URL . $url;
 	}
 	// 跳转默认是当前模块
 	if (count($arr) <= 0) {
-		ApeWeb::$SEND_BODY = ApeWeb::$SEND_BODY . "<script>location.href='" . $url . "';</script>";
+		ToWeb::$SEND_BODY = ToWeb::$SEND_BODY . "<script>location.href='" . $url . "';</script>";
 	} else {
 		$str = "";
 		$str = "<form method='post' action='" . $url . "' id='my_f_fomr_d'>";
@@ -108,7 +108,7 @@ function R($url, $arr = array()) {
 		}
 		$str = $str . "</form>";
 		$str = $str . "<script>document.getElementById('my_f_fomr_d').submit();</script>";
-		ApeWeb::$SEND_BODY = ApeWeb::$SEND_BODY . $str;
+		ToWeb::$SEND_BODY = ToWeb::$SEND_BODY . $str;
 	}
 	return true;
 }
@@ -122,7 +122,7 @@ function api($msg, $code, $content) {
 	$arr["code"] = $code;
 	$content = json_int_to_string($content);
 	$arr["content"] = $content;
-	ApeWeb::$SEND_BODY = ApeWeb::$SEND_BODY . json_encode($arr);
+	ToWeb::$SEND_BODY = ToWeb::$SEND_BODY . json_encode($arr);
 	return true;
 }
 
@@ -130,7 +130,7 @@ function api($msg, $code, $content) {
  * 返回页面
  */
 function view($tpl, &$arr = array()) {
-	ApeWeb::$SEND_BODY = ApeWeb::$SEND_BODY . ApeWeb::$view->view($tpl, $arr);
+	ToWeb::$SEND_BODY = ToWeb::$SEND_BODY . ToWeb::$view->view($tpl, $arr);
 	return true;
 }
 
@@ -217,10 +217,10 @@ function find($model, $id) {
  * 日志打印
  */
 function dd_log($msg, $dir = "default") {
-	if (ApeWeb::$udp_log_client != null) {
+	if (ToWeb::$udp_log_client != null) {
 		$arr["dir"] = $dir;
 		$arr["msg"] = $msg;
-		ApeWeb::$udp_log_client->send(json_encode($arr));
+		ToWeb::$udp_log_client->send(json_encode($arr));
 	}
 }
 
@@ -231,14 +231,14 @@ function dd_log($msg, $dir = "default") {
  */
 function close_layer($cla = "null", $m = "") {
 	if ($cla == "null") {
-		ApeWeb::$SEND_BODY = ApeWeb::$SEND_BODY . "<script>var index = parent.layer.getFrameIndex(window.name);parent.layer.close(index);</script>";
+		ToWeb::$SEND_BODY = ToWeb::$SEND_BODY . "<script>var index = parent.layer.getFrameIndex(window.name);parent.layer.close(index);</script>";
 		return true;
 	}
 	if ($cla == "reload") {
-		ApeWeb::$SEND_BODY = ApeWeb::$SEND_BODY . "<script>var index = parent.layer.getFrameIndex(window.name);parent.open_reload();parent.layer.close(index);</script>";
+		ToWeb::$SEND_BODY = ToWeb::$SEND_BODY . "<script>var index = parent.layer.getFrameIndex(window.name);parent.open_reload();parent.layer.close(index);</script>";
 		return true;
 	}
-	ApeWeb::$SEND_BODY = ApeWeb::$SEND_BODY . "<script>var index = parent.layer.getFrameIndex(window.name);parent.ape_open('" . $cla . "','" . $m . "');parent.layer.close(index);</script>";
+	ToWeb::$SEND_BODY = ToWeb::$SEND_BODY . "<script>var index = parent.layer.getFrameIndex(window.name);parent.To_open('" . $cla . "','" . $m . "');parent.layer.close(index);</script>";
 	return true;
 }
 

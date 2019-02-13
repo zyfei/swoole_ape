@@ -1,5 +1,9 @@
 <?php
-namespace ape\db;
+namespace tofu\db;
+
+use tofuTo;
+use tofu\To;
+use tofu\exception\Exception;
 
 /**
  * mysql连接池
@@ -228,20 +232,20 @@ class MysqlPool extends AbstractPool {
 	 * 获取当前协程使用的mysql连接
 	 */
 	public static function getDb() {
-		return \Ape::get_co_poll(\Co::getuid())->get_mysql();
+		return To::get_co_poll(\Co::getuid())->get_mysql();
 	}
 
 	private static $hasInstance = false;
 
 	public static function getInstance() {
 		if (! self::$hasInstance) {
-			if (key_exists("database", \Ape::$_config)) {
+			if (key_exists("database", To::$_config)) {
 				self::$hasInstance = true;
 				self::$_instance = new MysqlPool();
-				self::$_instance->config = \Ape::$_config["database"];
-				self::$_instance->init(\Ape::$_config["database"]);
+				self::$_instance->config = To::$_config["database"];
+				self::$_instance->init(To::$_config["database"]);
 			} else {
-				throw new \Exception("database config is null");
+				throw new Exception("database config is null");
 			}
 		}
 		return self::$_instance;

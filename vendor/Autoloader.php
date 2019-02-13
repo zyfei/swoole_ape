@@ -7,9 +7,8 @@
 class Autoloader {
 
 	// lib文件目录,如果用namespace在外面没找到，尝试在lib下寻找
-	public static $_libPath = '_lib';
+	public static $_vendorPath = 'vendor';
 
-	// protected static $_vendorPath = 'vendor';
 	/**
 	 * 根据命名空间加载文件
 	 *
@@ -19,25 +18,33 @@ class Autoloader {
 	public static function loadByNamespace($name) {
 		// 相对路径
 		$class_path = str_replace('\\', DIRECTORY_SEPARATOR, $name);
-		
 		// 先尝试通过namespace 匹配地址寻找
 		$class_file = $class_path . '.php';
-		
 		// 如果没找到的话，再在_lib文件夹下寻找
-		if (! is_file(RUN_DIR .DIRECTORY_SEPARATOR. $class_file)) {
-			$class_file = self::$_libPath . DIRECTORY_SEPARATOR . $class_path . '.php';
+		if (! is_file(RUN_DIR . DIRECTORY_SEPARATOR . $class_file)) {
+			$class_file = self::$_vendorPath . DIRECTORY_SEPARATOR . $class_path . '.php';
 		}
 		// 找到文件
-		if (is_file(RUN_DIR .DIRECTORY_SEPARATOR. $class_file)) {
+		if (is_file(RUN_DIR . DIRECTORY_SEPARATOR . $class_file)) {
 			// 加载
-			require_once (RUN_DIR .DIRECTORY_SEPARATOR. $class_file);
+			require_once (RUN_DIR . DIRECTORY_SEPARATOR . $class_file);
 			if (class_exists("\\" . str_replace(DIRECTORY_SEPARATOR, "\\", $name), false)) {
 				return true;
 			}
 		}
 		return false;
 	}
+
+	// 设置启动目录
+	public static function set_run_dir() {
+		$backtrace = debug_backtrace();
+		$startFile = $backtrace[count($backtrace) - 1]['file'];
+		define('RUN_DIR', substr($startFile, 0, strrpos($startFile, DIRECTORY_SEPARATOR)));
+	}
 }
+
+// 设置启动目录
+Autoloader::set_run_dir();
 
 // 设置类自动加载回调函数
 spl_autoload_register('\Autoloader::loadByNamespace');
