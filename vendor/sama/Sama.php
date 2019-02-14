@@ -4,6 +4,7 @@ namespace sama;
 use sama\App;
 use sama\view\View;
 use sama\exception\Exception;
+use sama\util\SamaBeanFactory;
 
 /**
  * 高性能框架
@@ -23,7 +24,7 @@ class Sama {
 	private static $_startFile = "";
 
 	/**
-	 * 主server实例
+	 * 当前server实例
 	 */
 	public static $server = null;
 
@@ -52,36 +53,9 @@ class Sama {
 	public static $dead_workers = array();
 
 	/**
-	 * 所有的bean
-	 */
-	private static $beans = array();
-
-	/**
-	 * 类注释标签
-	 */
-	private static $class_tags = array();
-
-	/**
-	 * http路由
-	 */
-	public static $http_route_maps = array();
-
-	public static $_http_route_method_url_maps = array();
-
-	/**
-	 * 类=>类的拦截器
-	 */
-	private static $_middleware_maps = array();
-
-	/**
-	 * 定义了标签的类
-	 */
-	private static $_need_load_class_arr = array();
-
-	/**
 	 * 协程信息数组，保存协程id=>app格式的关系
 	 */
-	private static $co_pool = array();
+	private static $coroutine_app_map = array();
 
 	private static $_maxSocketNameLength;
 
@@ -127,7 +101,7 @@ class Sama {
 	);
 
 	/**
-	 * 初始化框架
+	 * 传入新配置，覆盖默认配置
 	 */
 	public static function config($config = array()) {
 		// 引入标准配置文件
@@ -142,7 +116,7 @@ class Sama {
 	}
 
 	/**
-	 * 添加监听
+	 * 开始监听,此方法传入的配置只在此listen生效
 	 */
 	public static function listen($address = null, $config = array()) {
 		// 引入标准配置文件
@@ -181,6 +155,119 @@ class Sama {
 	}
 
 	/**
+	 * 管理进程启动
+	 */
+	private static function managerStart($server) {
+		self::$_statisticsFile = sys_get_temp_dir() . '/swooleSama' . $server->master_pid . '.status';
+		swoole_set_process_name('swoole_sama: manager process  start_file=' . self::$_startFile);
+		// 等待数据
+		sleep(1);
+
+		// 每10秒处理一次数据
+		function exec_statisticsFile() {
+			while (Sama::$_workers_channel->stats()["queue_num"] > 0) {
+				$a = Sama::$_workers_channel->pop();
+				if ($a["m"] == "worker") {
+					$worker = $a["data"];
+					Sama::$workers[$worker['pid']] = $worker;
+				}
+			}
+			foreach (Sama::$workers as $k => $n) {
+				// 如果不存活了
+				if (! \swoole_process::kill($k, 0)) {
+					Sama::$dead_workers[$k] = $n;
+					unset(Sama::$workers[$k]);
+				}
+			}
+			Sama::$_globalStatistics["workers"] = Sama::$workers;
+			Sama::$_globalStatistics["dead_workers"] = Sama::$dead_workers;
+			Sama::$_globalStatistics["request_count"] = Sama::$server->stats()["request_count"];
+			file_put_contents(Sama::$_statisticsFile, json_encode(Sama::$_globalStatistics));
+		}
+		exec_statisticsFile();
+		swoole_timer_tick(3000, function () {
+			exec_statisticsFile();
+		});
+	}
+
+	/**
+	 * 工作进程和任务进程启动
+	 */
+	private static function workerStart($server, $worker_id) {
+		self::$server = $server;
+		global $argv;
+		if ($server->taskworker) {
+			swoole_set_process_name('swoole_sama: task_worker process  ' . $server->setting["name"] . ' ' . $server->setting["address"]);
+		} else {
+			swoole_set_process_name('swoole_sama: worker process  ' . $server->setting["name"] . ' ' . $server->setting["address"]);
+		}
+		go(function () use ($server) {
+
+			function worder_channel($server) {
+				$data = array();
+				$data["is_taskworker"] = $server->taskworker;
+				$data["worker_id"] = $server->worker_id;
+				$data["pid"] = $server->worker_pid;
+				$data["memory"] = round(memory_get_usage(true) / (1024 * 1024), 2) . "M";
+				$data["status"] = $server->stats();
+				// 通知manager进程(注意不是master进程)
+				Sama::send_worker_channel("worker", $data);
+			}
+			worder_channel($server);
+			// 3秒刷新一次
+			swoole_timer_tick(3000, function () use ($server) {
+				worder_channel($server);
+			});
+		});
+	}
+
+	/**
+	 * 消息触发
+	 */
+	private static function onMessage(App $app) {
+		// 添加协程关系
+		self::$coroutine_app_map[\Co::getuid()] = $app;
+		// 升级到最新版终于支持defer了
+		defer(function () use ($app) {
+			// 在这里回收mysql资源以及一些其他操作
+			$app->free_mysql();
+			unset(self::$coroutine_app_map[\Co::getuid()]);
+			unset($app);
+		});
+		
+		if (key_exists($app->request->server['path_info'], SamaBeanFactory::$http_route_maps)) {
+			$http_arr = SamaBeanFactory::$http_route_maps[$app->request->server['path_info']];
+			$app->route_map = $http_arr;
+			$obj = SamaBeanFactory::getBean($http_arr['cla']);
+			$method = $http_arr['method'];
+			if (key_exists($http_arr['cla'], SamaBeanFactory::$_middleware_maps)) {
+				foreach (SamaBeanFactory::$_middleware_maps[$http_arr['cla']] as $m) {
+					$return_t = SamaBeanFactory::getBean($m)->_before($app);
+					if ($return_t === false) {
+						$app->end();
+						return;
+					}
+				}
+			}
+			$obj_return = $obj->$method($app);
+			if (is_array($obj_return) || is_object($obj_return)) {
+				$obj_return = json_encode($obj_return);
+			}
+			$app->return_data = $app->return_data . $obj_return;
+			if (key_exists($http_arr['cla'], SamaBeanFactory::$_middleware_maps)) {
+				foreach (SamaBeanFactory::$_middleware_maps[$http_arr['cla']] as $m) {
+					$return_t = SamaBeanFactory::getBean($m)->_after($app);
+					if ($return_t === false) {
+						$app->end();
+						return;
+					}
+				}
+			}
+		}
+		$app->end();
+	}
+
+	/**
 	 * 开始web服务
 	 */
 	public static function run() {
@@ -209,121 +296,17 @@ class Sama {
 			}
 		}
 		
-		/**
-		 * manager进程启动
-		 */
 		self::$server->on('managerStart', function ($server) {
-			self::$_statisticsFile = sys_get_temp_dir() . '/swooleSama' . $server->master_pid . '.status';
-			swoole_set_process_name('swoole_sama: manager process  start_file=' . self::$_startFile);
-			sleep(1);
-			// 清空缓存
-			self::clear_storage();
-
-			// 每10秒处理一次数据
-			function exec_statisticsFile() {
-				while (Sama::$_workers_channel->stats()["queue_num"] > 0) {
-					$a = Sama::$_workers_channel->pop();
-					if ($a["m"] == "worker") {
-						$worker = $a["data"];
-						Sama::$workers[$worker['pid']] = $worker;
-					}
-				}
-				foreach (Sama::$workers as $k => $n) {
-					// 如果不存活了
-					if (! \swoole_process::kill($k, 0)) {
-						Sama::$dead_workers[$k] = $n;
-						unset(Sama::$workers[$k]);
-					}
-				}
-				Sama::$_globalStatistics["workers"] = Sama::$workers;
-				Sama::$_globalStatistics["dead_workers"] = Sama::$dead_workers;
-				Sama::$_globalStatistics["request_count"] = Sama::$server->stats()["request_count"];
-				file_put_contents(Sama::$_statisticsFile, json_encode(Sama::$_globalStatistics));
-			}
-			exec_statisticsFile();
-			swoole_timer_tick(3000, function () {
-				exec_statisticsFile();
-			});
+			self::managerStart($server);
 		});
 		self::$server->on('workerStart', function ($server, $worker_id) {
-			global $argv;
-			if ($server->taskworker) {
-				swoole_set_process_name('swoole_sama: task_worker process  ' . $server->setting["name"] . ' ' . $server->setting["address"]);
-			} else {
-				swoole_set_process_name('swoole_sama: worker process  ' . $server->setting["name"] . ' ' . $server->setting["address"]);
-			}
-			go(function () use ($server) {
-
-				function worder_channel($server) {
-					$data = array();
-					$data["is_taskworker"] = $server->taskworker;
-					$data["worker_id"] = $server->worker_id;
-					$data["pid"] = $server->worker_pid;
-					$data["memory"] = round(memory_get_usage(true) / (1024 * 1024), 2) . "M";
-					$data["status"] = $server->stats();
-					// 通知manager进程(注意不是master进程)
-					Sama::send_worker_channel("worker", $data);
-				}
-				worder_channel($server);
-				// 3秒刷新一次
-				swoole_timer_tick(3000, function () use ($server) {
-					worder_channel($server);
-				});
-			});
+			self::workerStart($server, $worker_id);
 		});
-		
-		/**
-		 * tcp请求触发
-		 */
-		self::$server->on('receive', function ($server, $fd, $reactor_id, $data) {
-			echo "receive \n";
-		});
-		
-		/**
-		 * http请求触发
-		 */
+		self::$server->on('receive', function ($server, $fd, $reactor_id, $data) {});
 		self::$server->on('request', function ($request, $response) {
 			$app = new App();
 			$app->setHttp($request, $response);
-			self::add_co_poll(\Co::getuid(), $app);
-			// 升级到最新版终于支持defer了
-			defer(function () use ($app) {
-				// 在这里回收mysql资源以及一些其他操作
-				$app->free_mysql();
-				self::clear_co_poll(\Co::getuid());
-				unset($app);
-			});
-			
-			$return_str = "";
-			if (key_exists($request->server['path_info'], self::$http_route_maps)) {
-				$http_arr = self::$http_route_maps[$request->server['path_info']];
-				$app->route_map = $http_arr;
-				$obj = self::getBean($http_arr['cla']);
-				$method = $http_arr['method'];
-				if (key_exists($http_arr['cla'], self::$_middleware_maps)) {
-					foreach (self::$_middleware_maps[$http_arr['cla']] as $m) {
-						$return_t = self::getBean($m)->_before($app);
-						if ($return_t === false) {
-							$app->end();
-							return;
-						}
-					}
-				}
-				$return_str = $obj->$method($app);
-				if (is_array($return_str) || is_object($return_str)) {
-					$return_str = json_encode($return_str);
-				}
-				if (key_exists($http_arr['cla'], self::$_middleware_maps)) {
-					foreach (self::$_middleware_maps[$http_arr['cla']] as $m) {
-						$return_t = self::getBean($m)->_after($app);
-						if ($return_t === false) {
-							$app->end();
-							return;
-						}
-					}
-				}
-			}
-			$app->end($return_str);
+			self::onMessage($app);
 		});
 		
 		/**
@@ -353,14 +336,14 @@ class Sama {
 	public static function runAll() {
 		self::init();
 		self::parseCommand();
-		self::loadPhpFiles();
-		self::create_beans();
-		self::create_tags();
+		SamaBeanFactory::run();
 		self::displayUI();
 		self::run();
 	}
 
 	private static function init() {
+		// 清空缓存
+		self::clear_storage();
 		// Start file.
 		$backtrace = debug_backtrace();
 		self::$_startFile = $backtrace[count($backtrace) - 1]['file'];
@@ -376,321 +359,121 @@ class Sama {
 		self::$_globalStatistics['maxSocketNameLength'] = self::$_maxSocketNameLength;
 	}
 
-	private static function create_beans() {
-		// 创建bean
-		foreach (self::$_need_load_class_arr as $obj) {
-			$ref = new \ReflectionClass($obj);
-			$class_tag = $ref->getDocComment();
-			$class_tag = preg_replace('# #', '', $class_tag);
-			$k2 = "bean";
-			$preg = '/\@' . $k2 . '\([\s\S]*?\)/';
-			preg_match_all($preg, $class_tag, $class_tag_arr);
-			$class_tag_arr = $class_tag_arr[0];
-			if (count($class_tag_arr) <= 0) {
-				$preg = '/\@' . $k2 . '[\s\S]*?/';
-				preg_match_all($preg, $class_tag, $class_tag_arr2);
-				$class_tag_arr2 = $class_tag_arr2[0];
-				if (count($class_tag_arr2) > 0) {
-					$class_tag_arr[] = "@" . $k2 . "()";
-				}
-			}
-			foreach ($class_tag_arr as $n) {
-				$rn = 0;
-				$pram = str_replace("@" . $k2 . "(", "", $n, $rn);
-				if ($rn == 0) {
-					$pram = null;
-				} else {
-					$pram = substr($pram, 0, strlen($pram) - 1);
-				}
-				// 已经匹配到了，进入Taq类里面执行操作
-				// self::getBean("__need_load_class_arr_" . $k2)->$k2($obj, $pram);
-				if ($pram == "") {
-					$pram = $obj;
-				}
-				self::addBean($pram, $obj);
-			}
-		}
-	}
-
 	/**
-	 * 获取所有标签声明
-	 */
-	private static function create_tags() {
-		$tags = require_once 'tag/tags.php';
-		$tag_methods = array();
-		foreach ($tags as $k => $n) {
-			$bean_name = "__need_load_class_arr_" . $k;
-			self::addBean($bean_name, $n);
-			$class2 = new \ReflectionClass($n);
-			$methods2 = $class2->getMethods();
-			$class_tag = array();
-			foreach ($methods2 as $k2 => $n2) {
-				$class_tag[] = $n2->name;
-			}
-			$tag_methods[$k] = $class_tag;
-		}
-		self::$class_tags = $tag_methods;
-		foreach (self::$_need_load_class_arr as $n) {
-			self::loadClassTag($n);
-		}
-	}
-
-	/**
-	 * 读取所有的php文件
-	 */
-	private static function loadPhpFiles() {
-		$dir_iterator = new \RecursiveDirectoryIterator(RUN_DIR);
-		$iterator = new \RecursiveIteratorIterator($dir_iterator);
-		foreach ($iterator as $file) {
-			// only check php files
-			if (pathinfo($file, PATHINFO_EXTENSION) != 'php') {
-				continue;
-			}
-			$namespace = str_replace(RUN_DIR . DIRECTORY_SEPARATOR, "", $file->getPath());
-			$namespace = str_replace(\Autoloader::$_vendorPath . DIRECTORY_SEPARATOR, "", $namespace);
-			// 203行加了一个DIRECTORY_SEPARATOR，现在问题是Autoloader不太好使
-			$file_name = (string) $file;
-			$contents = file_get_contents($file_name);
-			$preg = '/class [\s\S]*? /';
-			preg_match_all($preg, $contents, $res);
-			foreach ($res[0] as $k => $n) {
-				$className = trim(get_between($n, "class ", ' '));
-				$className = $namespace . DIRECTORY_SEPARATOR . $className;
-				// dd($className);
-				// 判断是否是类并加载
-				if ($k == 0) {
-					if (! \Autoloader::loadByNamespace($className)) {
-						break;
-					}
-				} else {
-					// 判断是否存在class
-					if (! class_exists("\\" . str_replace(DIRECTORY_SEPARATOR, "\\", $className), false)) {
-						break;
-					}
-				}
-				self::$_need_load_class_arr[] = "\\" . str_replace(DIRECTORY_SEPARATOR, "\\", $className);
-			}
-		}
-	}
-
-	/**
-	 * 读取并解析类的注释。不读取静态方法
-	 */
-	private static function loadClassTag($obj) {
-		$ref = new \ReflectionClass($obj);
-		$class_tag = $ref->getDocComment();
-		$class_tag = preg_replace('# #', '', $class_tag);
-		foreach (self::$class_tags as $k2 => $n2) {
-			$preg = '/\@' . $k2 . '\([\s\S]*?\)/';
-			preg_match_all($preg, $class_tag, $class_tag_arr);
-			$class_tag_arr = $class_tag_arr[0];
-			if (count($class_tag_arr) <= 0) {
-				$preg = '/\@' . $k2 . '[\s\S]*?/';
-				preg_match_all($preg, $class_tag, $class_tag_arr2);
-				$class_tag_arr2 = $class_tag_arr2[0];
-				if (count($class_tag_arr2) > 0) {
-					$class_tag_arr[] = "@" . $k2 . "()";
-				}
-			}
-			foreach ($class_tag_arr as $n) {
-				if (! self::hasBean($obj)) {
-					self::addBean($obj, $obj);
-				}
-				$rn = 0;
-				$pram = str_replace("@" . $k2 . "(", "", $n, $rn);
-				if ($rn == 0) {
-					$pram = null;
-				} else {
-					$pram = substr($pram, 0, strlen($pram) - 1);
-				}
-				// 已经匹配到了，进入Taq类里面执行操作
-				self::getBean("__need_load_class_arr_" . $k2)->$k2($obj, $pram);
-				// 接下来解析方法
-				self::loadMethodTag($k2, $obj);
-			}
-		}
-	}
-
-	/**
-	 * 加载方法注释
-	 * 将符合规定的注释返回
-	 */
-	public static function loadMethodTag($_need_load_class_arr_tag, $class_tag) {
-		$ref = new \ReflectionClass(self::getBean($class_tag));
-		$methods = $ref->getMethods();
-		if ($methods) {
-			foreach ($methods as $method) {
-				$tag = $method->getDocComment();
-				$tag = preg_replace('# #', '', $tag);
-				foreach (self::$class_tags[$_need_load_class_arr_tag] as $k2 => $n2) {
-					$preg = '/\@' . $n2 . '\([\s\S]*?\)/';
-					preg_match_all($preg, $tag, $method_tag_arr);
-					$method_tag_arr = $method_tag_arr[0];
-					if (count($method_tag_arr) <= 0) {
-						$preg = '/\@' . $n2 . '[\s\S]*?/';
-						preg_match_all($preg, $tag, $method_tag_arr2);
-						$method_tag_arr2 = $method_tag_arr2[0];
-						if (count($method_tag_arr2) > 0) {
-							$method_tag_arr[] = "@" . $n2 . "()";
-						}
-					}
-					
-					foreach ($method_tag_arr as $n) {
-						$rn = 0;
-						$pram = str_replace("@" . $n2 . "(", "", $n, $rn);
-						if ($rn == 0) {
-							$pram = null;
-						} else {
-							$pram = substr($pram, 0, strlen($pram) - 1);
-						}
-						// 已经匹配到了，进入Taq类里面执行操作
-						self::getBean("__need_load_class_arr_" . $_need_load_class_arr_tag)->$n2($class_tag, $method->name, $pram);
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * 平滑重启
-	 * https://wiki.swoole.com/wiki/page/p-server/reload.html
-	 */
-	public static function reload($only_reload_taskworkrer = false) {
-		self::$server->reload($only_reload_taskworkrer);
-	}
-
-	/**
-	 * 获取定义的bean
-	 * 支持注释和手动set两组方式
-	 */
-	public static function getBean($bean_name) {
-		if (! key_exists($bean_name, self::$beans)) {
-			dd("beanname:$bean_name don't  exist！");
-			return false;
-		}
-		return self::$beans[$bean_name];
-	}
-
-	/**
-	 * 判断是否有bin
-	 */
-	public static function hasBean($bean_name) {
-		if (! key_exists($bean_name, self::$beans)) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * 设置bean
+	 * Parse command.
+	 * php yourfile.php start | stop | restart | reload | status
 	 *
-	 * @param $cla 类        	
-	 * @param $construct_parms 构造参数        	
+	 * @return void https://wiki.swoole.com/wiki/page/p-server/reload.html
 	 */
-	public static function addBean($bean_name, $cla, $args = null) {
-		if (! class_exists($cla)) {
-			dd($cla . " don't exist");
-			return false;
-		}
-		if (key_exists($bean_name, self::$beans)) {
-			dd("beanname:$bean_name exist！");
-			return false;
+	protected static function parseCommand() {
+		global $argv;
+		// Check argv;
+		$start_file = $argv[0];
+		if (! isset($argv[1])) {
+			exit("Usage: php yourfile.php {start|stop|restart|reload|status}\n");
 		}
 		
-		$c = (new \ReflectionClass($cla))->newInstanceWithoutConstructor();
-		if (method_exists($c, "__construct")) {
-			if ($args != null) {
-				call_user_func_array(array(
-					&$c,
-					"__construct"
-				), $args);
+		// Get command.
+		$command = trim($argv[1]);
+		$command2 = isset($argv[2]) ? $argv[2] : '';
+		
+		// Start command.
+		$mode = '';
+		if ($command === 'start') {
+			if ($command2 === '-d') {
+				// 开启守护进程
+				self::$_config["daemonize"] = 1;
+				$mode = 'in DAEMON mode';
 			} else {
-				call_user_func(array(
-					&$c,
-					"__construct"
-				));
+				$mode = 'in DEBUG mode';
 			}
 		}
-		self::$beans[$bean_name] = $c;
-		return $c;
-	}
-
-	/**
-	 * 添加http路由
-	 */
-	public static function addHttpRoute($cla, $method, $url, $filter = array()) {
-		while (1) {
-			$url = str_replace('//', '/', $url, $s_c);
-			if ($s_c <= 0) {
+		self::log("SwooleSama[$start_file] $command $mode");
+		
+		$master_pid = @file_get_contents(self::$_config["pid_file"]);
+		$master_is_alive = $master_pid && @\swoole_process::kill($master_pid, 0);
+		// 判断是否已经在运行
+		if ($master_is_alive) {
+			if ($command === 'start') {
+				self::log("SwooleSama[$start_file] already running");
+				exit();
+			}
+		} elseif ($command !== 'start' && $command !== 'restart') {
+			self::log("SwooleSama[$start_file] not run");
+			exit();
+		}
+		self::$_statisticsFile = sys_get_temp_dir() . '/swooleSama' . $master_pid . '.status';
+		// execute command.
+		switch ($command) {
+			case 'start':
+				if ($command2 === '-d') {
+					self::$_config["daemonize"] = 1;
+				}
 				break;
-			}
-		}
-		$route = array();
-		$route["cla"] = $cla;
-		$route["method"] = $method;
-		$route["filter"] = $filter;
-		self::$http_route_maps[$url] = $route;
-		self::$_http_route_method_url_maps[$cla . '\\' . $method] = $url;
-	}
-
-	public static function updateHttpRoute($cla, $method, $new_url = null, $filter = null) {
-		$old_url = self::$_http_route_method_url_maps[$cla . '\\' . $method];
-		
-		$route = self::$http_route_maps[$old_url];
-		if ($filter != null) {
-			foreach ($filter as $k => $n) {
-				$route["filter"][$k] = $n;
-			}
-		}
-		
-		// 如果url不变的话
-		if ($new_url == null) {
-			self::$http_route_maps[$old_url] = $route;
-		} else {
-			while (1) {
-				$new_url = str_replace('//', '/', $new_url, $s_c);
-				if ($s_c <= 0) {
+			case 'status':
+				$i = 0;
+				while (1) {
+					// 第一次
+					if ($i == 0) {
+						echo ("\e[0;0H\e[2J");
+						self::statusUI(file_get_contents(self::$_statisticsFile));
+					} else {
+						print("\033[0;0H");
+						$echo_data = explode("\n", self::$safeEchoData);
+						self::$safeEchoData = "";
+						foreach ($echo_data as $ei => $en) {
+							echo str_pad('', strlen($en)) . "\n";
+						}
+						print("\033[0;0H");
+						self::statusUI(file_get_contents(self::$_statisticsFile));
+					}
+					$i ++;
+					sleep(1);
+				}
+				exit(0);
+			case 'restart':
+			case 'stop':
+				self::log("SwooleSama[$start_file] is stoping ...");
+				// 发送停止信号
+				$master_pid && swoole_process::kill($master_pid, SIGTERM);
+				// Timeout.
+				$timeout = 5;
+				$start_time = time();
+				// Check master process is still alive?
+				while (1) {
+					$master_is_alive = $master_pid && swoole_process::kill($master_pid, 0);
+					if ($master_is_alive) {
+						// Timeout?
+						if (time() - $start_time >= $timeout) {
+							self::log("SwooleSama[$start_file] stop fail");
+							exit();
+						}
+						// Waiting amoment.
+						sleep(0.1);
+						continue;
+					}
+					// Stop success.
+					self::log("SwooleSama[$start_file] stop success");
+					if ($command === 'stop') {
+						exit(0);
+					}
+					if ($command2 === '-d') {
+						self::$_config["daemonize"] = 1;
+					}
 					break;
 				}
-			}
-			unset(self::$http_route_maps[$old_url]);
-			self::$_http_route_method_url_maps[$cla . '\\' . $method] = $new_url;
-			self::$http_route_maps[$new_url] = $route;
+				break;
+			case 'reload':
+				swoole_process::kill($master_pid, SIGUSR1);
+				self::log("SwooleSama[$start_file] reload");
+				exit();
+			default:
+				exit("Usage: php yourfile.php {start|stop|restart|reload|status}\n");
 		}
-	}
-
-	/**
-	 * 添加类拦截器
-	 */
-	public static function add_class_middleware($cla, $middlewares) {
-		self::$_middleware_maps[$cla] = $middlewares;
-	}
-
-	/**
-	 * 添加协程关系
-	 */
-	public static function add_co_poll($co_id, $app) {
-		self::$co_pool[$co_id] = $app;
-	}
-
-	public static function get_co_poll($co_id) {
-		if (key_exists($co_id, self::$co_pool)) {
-			return self::$co_pool[$co_id];
-		}
-		return null;
-	}
-
-	public static function clear_co_poll($co_id) {
-		unset(self::$co_pool[$co_id]);
 	}
 
 	/**
 	 * 程序启动的时候,显示欢迎ui
-	 */
-	/**
-	 * Display staring UI.
-	 *
-	 * @return void
 	 */
 	protected static function displayUI() {
 		self::safeEcho("\033[1A\n\033[K-----------------------\033[47;30m " . self::$_config["name"] . " \033[0m-----------------------------\n\033[0m");
@@ -709,6 +492,24 @@ class Sama {
 		} else {
 			self::safeEcho("Press Ctrl-C to quit. Start success.\n");
 		}
+	}
+
+	/**
+	 * 平滑重启
+	 * https://wiki.swoole.com/wiki/page/p-server/reload.html
+	 */
+	public static function reload($only_reload_taskworkrer = false) {
+		self::$server->reload($only_reload_taskworkrer);
+	}
+
+	/**
+	 * 通过协程id，获取app实体
+	 */
+	public static function get_co_poll($co_id) {
+		if (key_exists($co_id, self::$coroutine_app_map)) {
+			return self::$coroutine_app_map[$co_id];
+		}
+		return null;
 	}
 
 	/**
@@ -806,121 +607,7 @@ class Sama {
 		file_put_contents((string) self::$_config["log_file"], date('Y-m-d H:i:s') . ' ' . $msg, FILE_APPEND | LOCK_EX);
 	}
 
-	/**
-	 * Parse command.
-	 * php yourfile.php start | stop | restart | reload | status
-	 *
-	 * @return void https://wiki.swoole.com/wiki/page/p-server/reload.html
-	 */
-	protected static function parseCommand() {
-		global $argv;
-		// Check argv;
-		$start_file = $argv[0];
-		if (! isset($argv[1])) {
-			exit("Usage: php yourfile.php {start|stop|restart|reload|status}\n");
-		}
-		
-		// Get command.
-		$command = trim($argv[1]);
-		$command2 = isset($argv[2]) ? $argv[2] : '';
-		
-		// Start command.
-		$mode = '';
-		if ($command === 'start') {
-			if ($command2 === '-d') {
-				// 开启守护进程
-				self::$_config["daemonize"] = 1;
-				$mode = 'in DAEMON mode';
-			} else {
-				$mode = 'in DEBUG mode';
-			}
-		}
-		self::log("SwooleSama[$start_file] $command $mode");
-		
-		$master_pid = @file_get_contents(self::$_config["pid_file"]);
-		$master_is_alive = $master_pid && @\swoole_process::kill($master_pid, 0);
-		// 判断是否已经在运行
-		if ($master_is_alive) {
-			if ($command === 'start') {
-				self::log("SwooleSama[$start_file] already running");
-				exit();
-			}
-		} elseif ($command !== 'start' && $command !== 'restart') {
-			self::log("SwooleSama[$start_file] not run");
-			exit();
-		}
-		self::$_statisticsFile = sys_get_temp_dir() . '/swooleSama' . $master_pid . '.status';
-		// execute command.
-		switch ($command) {
-			case 'start':
-				if ($command2 === '-d') {
-					self::$_config["daemonize"] = 1;
-				}
-				break;
-			case 'status':
-				$i = 0;
-				while (1) {
-					// 第一次
-					if ($i == 0) {
-						echo ("\e[0;0H\e[2J");
-						self::statusUI(file_get_contents(self::$_statisticsFile));
-					} else {
-						print("\033[0;0H");
-						$echo_data = explode("\n", self::$safeEchoData);
-						self::$safeEchoData = "";
-						foreach ($echo_data as $ei => $en) {
-							echo str_pad('', strlen($en)) . "\n";
-						}
-						// sleep(1);
-						print("\033[0;0H");
-						self::statusUI(file_get_contents(self::$_statisticsFile));
-					}
-					$i ++;
-					sleep(1);
-					// var_dump($i.'\n');
-				}
-				exit(0);
-			case 'restart':
-			case 'stop':
-				self::log("SwooleSama[$start_file] is stoping ...");
-				// 发送停止信号
-				$master_pid && swoole_process::kill($master_pid, SIGTERM);
-				// Timeout.
-				$timeout = 5;
-				$start_time = time();
-				// Check master process is still alive?
-				while (1) {
-					$master_is_alive = $master_pid && swoole_process::kill($master_pid, 0);
-					if ($master_is_alive) {
-						// Timeout?
-						if (time() - $start_time >= $timeout) {
-							self::log("SwooleSama[$start_file] stop fail");
-							exit();
-						}
-						// Waiting amoment.
-						sleep(0.1);
-						continue;
-					}
-					// Stop success.
-					self::log("SwooleSama[$start_file] stop success");
-					if ($command === 'stop') {
-						exit(0);
-					}
-					if ($command2 === '-d') {
-						self::$_config["daemonize"] = 1;
-					}
-					break;
-				}
-				break;
-			case 'reload':
-				swoole_process::kill($master_pid, SIGUSR1);
-				self::log("SwooleSama[$start_file] reload");
-				exit();
-			default:
-				exit("Usage: php yourfile.php {start|stop|restart|reload|status}\n");
-		}
-	}
-
+	
 	public static function send_worker_channel($method, $data = array()) {
 		$a = array();
 		$a["m"] = $method;

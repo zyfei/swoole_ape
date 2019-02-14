@@ -3,6 +3,7 @@ namespace sama;
 
 use sama\db\MysqlPool;
 use sama\tag\ViewTag;
+use sama\util\SamaBeanFactory;
 
 /**
  * 综合各类请求信息
@@ -12,8 +13,6 @@ class App {
 	public $request = null;
 
 	public $response = null;
-
-	public $send_msg = '';
 
 	// 访问的host
 	public $home = '';
@@ -30,6 +29,12 @@ class App {
 	// 处理这个请求的路由类详情
 	public $route_map = null;
 
+	// 请求包体
+	public $data = null;
+
+	// 返回包体
+	public $return_data = "";
+
 	/**
 	 * http类型请求初始化
 	 */
@@ -41,13 +46,14 @@ class App {
 		$this->response = $response;
 		$this->type = 1;
 		$this->co_uid = \Co::getuid();
+		$this->data = $request->getData();
 	}
 
 	/**
 	 * 发送
 	 */
-	public function send($str = "") {
-		$this->send_msg = $this->send_msg . $str;
+	public function send($data = "") {
+		$this->return_data = $this->return_data . $data;
 	}
 
 	/**
@@ -55,9 +61,9 @@ class App {
 	 *
 	 * @param string $str        	
 	 */
-	public function end($str = "") {
-		$this->send_msg = $this->send_msg . $str;
-		$this->response->end($str);
+	public function end($data = "") {
+		$this->return_data = $this->return_data . $data;
+		$this->response->end($this->return_data);
 	}
 
 	/**
@@ -93,7 +99,7 @@ class App {
 	}
 
 	public function view($tmp, $arr) {
-		$view = Sama::getBean("Sama.sama.view.view");
+		$view = SamaBeanFactory::getBean("Sama.sama.view.view");
 		$view_tmp_dir = "";
 		if (key_exists($this->route_map['cla'], ViewTag::$view_cla_tmpdir_map)) {
 			$view_tmp_dir = RUN_DIR . DIRECTORY_SEPARATOR . ViewTag::$view_cla_tmpdir_map[$this->route_map['cla']] . DIRECTORY_SEPARATOR;

@@ -3,6 +3,7 @@ namespace sama\tag;
 
 use samaSama;
 use sama\Sama;
+use sama\util\SamaBeanFactory;
 
 /**
  * 类拦截器
@@ -22,6 +23,6 @@ class MiddlewareTag {
 				unset($methods[$k]);
 			}
 		}
-		Sama::add_class_middleware($cla, $methods);
+		SamaBeanFactory::add_class_middleware($cla, $methods);
 	}
 }
