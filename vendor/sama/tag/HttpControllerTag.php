@@ -3,6 +3,7 @@ namespace sama\tag;
 
 use sama\Sama;
 use sama\util\SamaBeanFactory;
+use sama\Ioc;
 
 /**
  * 类拦截器
@@ -49,7 +50,7 @@ class HttpControllerTag {
 		$this->class_url = $parm;
 		
 		// 这个时候把类和方法绑定在http路由上
-		$obj = SamaBeanFactory::getBean($cla);
+		$obj = Ioc::get($cla);
 		$ref = new \ReflectionClass($cla);
 		$methods = $ref->getMethods();
 		foreach ($methods as $k => $n) {
@@ -69,7 +70,7 @@ class HttpControllerTag {
 		$new_url = $this->class_url . "/" . $parm;
 		SamaBeanFactory::updateHttpRoute($cla, $method, $new_url);
 	}
-
+	
 	/**
 	 * 限制访问方法
 	 */

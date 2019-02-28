@@ -234,15 +234,14 @@ class Sama {
 			unset(self::$coroutine_app_map[\Co::getuid()]);
 			unset($app);
 		});
-		
 		if (key_exists($app->request->server['path_info'], SamaBeanFactory::$http_route_maps)) {
 			$http_arr = SamaBeanFactory::$http_route_maps[$app->request->server['path_info']];
 			$app->route_map = $http_arr;
-			$obj = SamaBeanFactory::getBean($http_arr['cla']);
+			$obj = Ioc::get($http_arr['cla']);
 			$method = $http_arr['method'];
 			if (key_exists($http_arr['cla'], SamaBeanFactory::$_middleware_maps)) {
 				foreach (SamaBeanFactory::$_middleware_maps[$http_arr['cla']] as $m) {
-					$return_t = SamaBeanFactory::getBean($m)->_before($app);
+					$return_t = Ioc::get($m)->_before($app);
 					if ($return_t === false) {
 						$app->end();
 						return;
@@ -256,7 +255,7 @@ class Sama {
 			$app->return_data = $app->return_data . $obj_return;
 			if (key_exists($http_arr['cla'], SamaBeanFactory::$_middleware_maps)) {
 				foreach (SamaBeanFactory::$_middleware_maps[$http_arr['cla']] as $m) {
-					$return_t = SamaBeanFactory::getBean($m)->_after($app);
+					$return_t = Ioc::get($m)->_after($app);
 					if ($return_t === false) {
 						$app->end();
 						return;

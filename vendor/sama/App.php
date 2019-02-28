@@ -99,7 +99,7 @@ class App {
 	}
 
 	public function view($tmp, $arr) {
-		$view = SamaBeanFactory::getBean("Sama.sama.view.view");
+		$view = Ioc::get("Sama.sama.view.view");
 		$view_tmp_dir = "";
 		if (key_exists($this->route_map['cla'], ViewTag::$view_cla_tmpdir_map)) {
 			$view_tmp_dir = RUN_DIR . DIRECTORY_SEPARATOR . ViewTag::$view_cla_tmpdir_map[$this->route_map['cla']] . DIRECTORY_SEPARATOR;

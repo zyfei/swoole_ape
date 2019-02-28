@@ -1,15 +1,12 @@
 <?php
 namespace sama\util;
 
+use sama\Ioc;
+
 /**
  * 读取php文件，并且初始化bean
  */
 class SamaBeanFactory {
-
-	/**
-	 * 所有的bean
-	 */
-	private static $beans = array();
 
 	/**
 	 * 类注释标签
@@ -110,7 +107,7 @@ class SamaBeanFactory {
 				if ($pram == "") {
 					$pram = $obj;
 				}
-				self::addBean($pram, $obj);
+				Ioc::bind($pram,$obj);
 			}
 		}
 	}
@@ -123,7 +120,7 @@ class SamaBeanFactory {
 		$tag_methods = array();
 		foreach ($tags as $k => $n) {
 			$bean_name = "__need_load_class_arr_" . $k;
-			self::addBean($bean_name, $n);
+			Ioc::bind($bean_name, $n);
 			$class2 = new \ReflectionClass($n);
 			$methods2 = $class2->getMethods();
 			$class_tag = array();
@@ -158,9 +155,7 @@ class SamaBeanFactory {
 				}
 			}
 			foreach ($class_tag_arr as $n) {
-				if (! self::hasBean($obj)) {
-					self::addBean($obj, $obj);
-				}
+				Ioc::bind($obj, $obj);
 				$rn = 0;
 				$pram = str_replace("@" . $k2 . "(", "", $n, $rn);
 				if ($rn == 0) {
@@ -169,7 +164,7 @@ class SamaBeanFactory {
 					$pram = substr($pram, 0, strlen($pram) - 1);
 				}
 				// 已经匹配到了，进入Taq类里面执行操作
-				self::getBean("__need_load_class_arr_" . $k2)->$k2($obj, $pram);
+				Ioc::get("__need_load_class_arr_" . $k2)->$k2($obj, $pram);
 				// 接下来解析方法
 				self::loadMethodTag($k2, $obj);
 			}
@@ -181,7 +176,7 @@ class SamaBeanFactory {
 	 * 将符合规定的注释返回
 	 */
 	private static function loadMethodTag($_need_load_class_arr_tag, $class_tag) {
-		$ref = new \ReflectionClass(self::getBean($class_tag));
+		$ref = new \ReflectionClass(Ioc::get($class_tag));
 		$methods = $ref->getMethods();
 		if ($methods) {
 			foreach ($methods as $method) {
@@ -209,67 +204,11 @@ class SamaBeanFactory {
 							$pram = substr($pram, 0, strlen($pram) - 1);
 						}
 						// 已经匹配到了，进入Taq类里面执行操作
-						self::getBean("__need_load_class_arr_" . $_need_load_class_arr_tag)->$n2($class_tag, $method->name, $pram);
+						Ioc::get("__need_load_class_arr_" . $_need_load_class_arr_tag)->$n2($class_tag, $method->name, $pram);
 					}
 				}
 			}
 		}
-	}
-
-	/**
-	 * 获取定义的bean
-	 * 支持注释和手动set两组方式
-	 */
-	public static function getBean($bean_name) {
-		if (! key_exists($bean_name, self::$beans)) {
-			dd("beanname:$bean_name don't  exist！");
-			return false;
-		}
-		return self::$beans[$bean_name];
-	}
-
-	/**
-	 * 判断是否有bin
-	 */
-	public static function hasBean($bean_name) {
-		if (! key_exists($bean_name, self::$beans)) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * 设置bean
-	 *
-	 * @param $cla 类        	
-	 * @param $construct_parms 构造参数        	
-	 */
-	public static function addBean($bean_name, $cla, $args = null) {
-		if (! class_exists($cla)) {
-			dd($cla . " don't exist");
-			return false;
-		}
-		if (key_exists($bean_name, self::$beans)) {
-			dd("beanname:$bean_name exist！");
-			return false;
-		}
-		
-		$c = (new \ReflectionClass($cla))->newInstanceWithoutConstructor();
-		if (method_exists($c, "__construct")) {
-			if ($args != null) {
-				call_user_func_array(array(
-					&$c,
-					"__construct"
-				), $args);
-			} else {
-				call_user_func(array(
-					&$c,
-					"__construct"
-				));
-			}
-		}
-		self::$beans[$bean_name] = $c;
-		return $c;
 	}
 
 	/**
