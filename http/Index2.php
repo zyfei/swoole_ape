@@ -5,18 +5,16 @@ use model\User;
 use sama\App;
 
 /**
- * @controller(/a)
- * @middleware(testFilter)
+ * @controller(/)
  * @view(/view2)
  */
-
-class Index {
+class Index2 {
 
 	/**
-	 * @mapping (/a)
+	 * @mapping (/)
 	 */
 	public function aaa(\sama\App $app) {
-		$app->send("hello world");
+		$app->send("hello world222");
 		// $user= array();
 		// $user['id'] = 23;
 		// $user["phone"] = 2;
@@ -25,20 +23,17 @@ class Index {
 		// $users = json_encode($users);
 		// $response->write("1234");
 		// dd("aaaa");
-
+		
 		// User::delete(23);
-
+		
 		// User::delete_all("id=?",array(24));
-
-		$users = User::get(25);
+		
+		// $users = User::get(25);
 		// $users = User::count("id=?",array(24));
-		$users = User::page(0, 100, "id!=?", 25, "id desc");
-
-		return $app->view("login", $users);
+		// $users = User::page(0, 100, "id!=?", 25, "id desc");
 	}
 
 	public function bbb($app) {
-		dd("bbb");
 		return "bbbb";
 	}
 }

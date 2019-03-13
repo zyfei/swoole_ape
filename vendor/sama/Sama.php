@@ -4,7 +4,7 @@ namespace sama;
 use sama\App;
 use sama\view\View;
 use sama\exception\Exception;
-use sama\util\SamaBeanFactory;
+use sama\AC;
 
 /**
  * 高性能框架
@@ -15,6 +15,11 @@ class Sama {
 	 * 全局配置
 	 */
 	public static $_config = null;
+
+	/**
+	 * 标签列表
+	 */
+	public static $_tag = null;
 
 	/**
 	 * 启动文件位置
@@ -34,17 +39,17 @@ class Sama {
 	private static $_init_workers = array();
 
 	/**
-	 * 进程通道,manager进程使用
-	 */
-	public static $_workers_channel = null;
-
-	/**
 	 * 使用status命令时候数据
 	 */
 	public static $_globalStatistics = array();
 
 	public static $_statisticsFile = null;
 
+	/**
+	 * 进程通道,manager进程使用
+	 */
+	public static $_workers_channel = null;
+	
 	/**
 	 * 记录所有进程状态,manager进程使用
 	 */
@@ -106,8 +111,9 @@ class Sama {
 	public static function config($config = array()) {
 		// 引入标准配置文件
 		if (self::$_config == null) {
-			require_once 'helper.php';
-			self::$_config = require_once 'config.php';
+			require_once 'config/helper.php';
+			self::$_config = require_once 'config/config.php';
+			self::$_tag = require_once 'config/tag.php';
 		}
 		// 使用新配置
 		foreach ($config as $k2 => $n2) {
@@ -121,8 +127,9 @@ class Sama {
 	public static function listen($address = null, $config = array()) {
 		// 引入标准配置文件
 		if (self::$_config == null) {
-			require_once 'helper.php';
-			self::$_config = require_once 'config.php';
+			require_once 'config/helper.php';
+			self::$_config = require_once 'config/config.php';
+			self::$_tag = require_once 'config/tag.php';
 		}
 		if ($address === null) {
 			throw new Exception('address is null');
@@ -203,7 +210,7 @@ class Sama {
 		}
 		go(function () use ($server) {
 
-			function worder_channel($server) {
+			function worker_channel($server) {
 				$data = array();
 				$data["is_taskworker"] = $server->taskworker;
 				$data["worker_id"] = $server->worker_id;
@@ -213,10 +220,10 @@ class Sama {
 				// 通知manager进程(注意不是master进程)
 				Sama::send_worker_channel("worker", $data);
 			}
-			worder_channel($server);
+			worker_channel($server);
 			// 3秒刷新一次
 			swoole_timer_tick(3000, function () use ($server) {
-				worder_channel($server);
+				worker_channel($server);
 			});
 		});
 	}
@@ -234,35 +241,17 @@ class Sama {
 			unset(self::$coroutine_app_map[\Co::getuid()]);
 			unset($app);
 		});
-		if (key_exists($app->request->server['path_info'], SamaBeanFactory::$http_route_maps)) {
-			$http_arr = SamaBeanFactory::$http_route_maps[$app->request->server['path_info']];
-			$app->route_map = $http_arr;
-			$obj = Ioc::get($http_arr['cla']);
-			$method = $http_arr['method'];
-			if (key_exists($http_arr['cla'], SamaBeanFactory::$_middleware_maps)) {
-				foreach (SamaBeanFactory::$_middleware_maps[$http_arr['cla']] as $m) {
-					$return_t = Ioc::get($m)->_before($app);
-					if ($return_t === false) {
-						$app->end();
-						return;
-					}
-				}
-			}
-			$obj_return = $obj->$method($app);
-			if (is_array($obj_return) || is_object($obj_return)) {
-				$obj_return = json_encode($obj_return);
-			}
-			$app->return_data = $app->return_data . $obj_return;
-			if (key_exists($http_arr['cla'], SamaBeanFactory::$_middleware_maps)) {
-				foreach (SamaBeanFactory::$_middleware_maps[$http_arr['cla']] as $m) {
-					$return_t = Ioc::get($m)->_after($app);
-					if ($return_t === false) {
-						$app->end();
-						return;
-					}
-				}
-			}
+		if ($app->controller == null || $app->method == null) {
+			$app->end();
+			return;
 		}
+		$obj = Ioc::get($app->controller);
+		$method = $app->method;
+		$obj_return = $obj->$method($app);
+		if (is_array($obj_return) || is_object($obj_return)) {
+			$obj_return = json_encode($obj_return);
+		}
+		$app->return_data = $app->return_data . $obj_return;
 		$app->end();
 	}
 
@@ -335,7 +324,7 @@ class Sama {
 	public static function runAll() {
 		self::init();
 		self::parseCommand();
-		SamaBeanFactory::run();
+		AC::run();
 		self::displayUI();
 		self::run();
 	}
@@ -434,13 +423,13 @@ class Sama {
 			case 'stop':
 				self::log("SwooleSama[$start_file] is stoping ...");
 				// 发送停止信号
-				$master_pid && swoole_process::kill($master_pid, SIGTERM);
+				$master_pid && @\swoole_process::kill($master_pid, SIGTERM);
 				// Timeout.
 				$timeout = 5;
 				$start_time = time();
 				// Check master process is still alive?
 				while (1) {
-					$master_is_alive = $master_pid && swoole_process::kill($master_pid, 0);
+					$master_is_alive = $master_pid && \swoole_process::kill($master_pid, 0);
 					if ($master_is_alive) {
 						// Timeout?
 						if (time() - $start_time >= $timeout) {
@@ -606,7 +595,6 @@ class Sama {
 		file_put_contents((string) self::$_config["log_file"], date('Y-m-d H:i:s') . ' ' . $msg, FILE_APPEND | LOCK_EX);
 	}
 
-	
 	public static function send_worker_channel($method, $data = array()) {
 		$a = array();
 		$a["m"] = $method;

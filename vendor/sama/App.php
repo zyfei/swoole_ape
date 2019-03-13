@@ -2,13 +2,14 @@
 namespace sama;
 
 use sama\db\MysqlPool;
-use sama\tag\ViewTag;
-use sama\util\SamaBeanFactory;
+use sama\view\View;
 
 /**
  * 综合各类请求信息
  */
 class App {
+
+	public $url = null;
 
 	public $request = null;
 
@@ -26,8 +27,11 @@ class App {
 	// 协程id
 	public $co_uid = 0;
 
-	// 处理这个请求的路由类详情
-	public $route_map = null;
+	// 处理这个请求的类
+	public $controller = null;
+
+	// 处理这个请求的方法
+	public $method = null;
 
 	// 请求包体
 	public $data = null;
@@ -47,6 +51,21 @@ class App {
 		$this->type = 1;
 		$this->co_uid = \Co::getuid();
 		$this->data = $request->getData();
+		$this->url = $request->server['path_info'];
+		// 获取处理类和方法
+		$cm_i = strrpos($this->url, "/");
+		$controller_url = substr($this->url, 0, $cm_i);
+		if ($controller_url == "") {
+			$controller_url = "/";
+		}
+		$method = substr($this->url, $cm_i + 1);
+		if (key_exists($controller_url, Ac::$controller_url_map)) {
+			$this->controller = Ac::$controller_url_map[$controller_url];
+			if (key_exists($method, Ac::$controller_methods_honey_map[Ac::$controller_url_map[$controller_url]])) {
+				$method = Ac::$controller_methods_honey_map[Ac::$controller_url_map[$controller_url]][$method];
+			}
+			$this->method = $method;
+		}
 	}
 
 	/**
@@ -79,6 +98,7 @@ class App {
 				$default = $this->request->post[$name];
 			}
 		}
+		return $default;
 	}
 
 	public function get_mysql() {
@@ -99,10 +119,10 @@ class App {
 	}
 
 	public function view($tmp, $arr) {
-		$view = Ioc::get("Sama.sama.view.view");
+		$view = Ioc::get(View::class);
 		$view_tmp_dir = "";
-		if (key_exists($this->route_map['cla'], ViewTag::$view_cla_tmpdir_map)) {
-			$view_tmp_dir = RUN_DIR . DIRECTORY_SEPARATOR . ViewTag::$view_cla_tmpdir_map[$this->route_map['cla']] . DIRECTORY_SEPARATOR;
+		if (key_exists($this->controller, AC::$view_cla_tmpdir_map)) {
+			$view_tmp_dir = RUN_DIR . DIRECTORY_SEPARATOR . AC::$view_cla_tmpdir_map[controller] . DIRECTORY_SEPARATOR;
 		}
 		return $view->view($this, $view_tmp_dir, $tmp, $arr);
 	}

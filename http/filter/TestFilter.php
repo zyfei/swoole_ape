@@ -3,6 +3,7 @@ namespace http\filter;
 
 /**
  * @bean(testFilter)
+ * @test
  */
 class TestFilter {
 

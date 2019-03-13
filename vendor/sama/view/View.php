@@ -4,10 +4,10 @@ namespace sama\view;
 use sama\Sama;
 
 /**
- * @bean(Sama.sama.view.view)
+ * @bean
  */
 class View {
-
+	
 	/*
 	 * The name of the directory where templates are located.
 	 * @var string
@@ -183,4 +183,5 @@ class View {
 			unlink($start_file);
 		}
 	}
+
 }

@@ -9,10 +9,11 @@ class Autoloader {
 	// lib文件目录,如果用namespace在外面没找到，尝试在lib下寻找
 	public static $_vendorPath = 'vendor';
 
+
 	/**
 	 * 根据命名空间加载文件
 	 *
-	 * @param string $name        	
+	 * @param string $name
 	 * @return boolean
 	 */
 	public static function loadByNamespace($name) {
