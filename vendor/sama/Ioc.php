@@ -47,13 +47,14 @@ class Ioc {
 			return $this->build($object);
 		}
 		// 如果是已经实例化，那么直接返回
-		if (!$is_new_obj && (! $this->bindings[$object] instanceof \Closure) && is_object($this->bindings[$object])) {
+		if (! $is_new_obj && (! $this->bindings[$object] instanceof \Closure) && is_object($this->bindings[$object])) {
 			return $this->bindings[$object];
 		}
 		// 构建
 		$obj = $this->build($this->bindings[$object]);
-		$this->bindings[$object] = $obj;
-		return $obj;
+		$aop_heandler = new AopHandler($obj);
+		$this->bindings[$object] = $aop_heandler;
+		return $aop_heandler;
 	}
 
 	// 实例化对象，如果是回调函数，直接调用其进行实例化
@@ -122,57 +123,3 @@ class Ioc {
 		), $arg);
 	}
 }
-
-// IoC容器使用方法
-// 定义一个接口
-// interface Visit {
-
-// 	public function go();
-// }
-
-// // 实现了接口的两个类
-// class Train implements Visit {
-
-// 	public function go() {
-// 		echo "go to by Train!\n";
-// 	}
-// }
-
-// class Bus implements Visit {
-
-// 	public function go() {
-// 		echo "go to by Bus!\n";
-// 	}
-// }
-
-// class Bus2 implements Visit {
-
-// 	public function go() {
-// 		echo "go to by Bus2!\n";
-// 	}
-// }
-
-// // 需要使用IoC容器的类
-// class Traveller {
-
-// 	protected $trafficTool;
-
-// 	/**
-// 	 * @bean()
-// 	 */
-// 	protected $train;
-
-// 	public function __construct(Visit $trafficTool) {
-// 		$this->trafficTool = $trafficTool;
-// 	}
-
-// 	public function visit() {
-// 		$this->trafficTool->go();
-// 	}
-// }
-// // 创建一个IoC容器
-// $bean = new Bean();
-// $bean->bind("Traveller", Traveller::class);
-// $bean->bind("Visit", Bus::class);
-// $tra = $bean->get("Traveller");
-// $tra->visit();

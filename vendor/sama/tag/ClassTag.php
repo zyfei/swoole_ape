@@ -5,7 +5,9 @@ use sama\Ioc;
 use sama\AC;
 
 /**
- * 视图根目录
+ * 类标签
+ * @author zhangyufei
+ *
  */
 class ClassTag {
 
@@ -52,4 +54,5 @@ class ClassTag {
 	public static function view($cla, $parm = "") {
 		AC::$view_cla_tmpdir_map[$cla] = $parm;
 	}
+	
 }

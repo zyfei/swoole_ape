@@ -24,7 +24,6 @@ class MethodTag {
 	 * 限制访问方法
 	 */
 	public static function mapping($cla, $method, $url = null) {
-		dd("---" . $method);
 		if ($url == "") {
 			return;
 		}

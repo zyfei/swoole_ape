@@ -122,7 +122,7 @@ class App {
 		$view = Ioc::get(View::class);
 		$view_tmp_dir = "";
 		if (key_exists($this->controller, AC::$view_cla_tmpdir_map)) {
-			$view_tmp_dir = RUN_DIR . DIRECTORY_SEPARATOR . AC::$view_cla_tmpdir_map[controller] . DIRECTORY_SEPARATOR;
+			$view_tmp_dir = RUN_DIR . DIRECTORY_SEPARATOR . AC::$view_cla_tmpdir_map[$this->controller] . DIRECTORY_SEPARATOR;
 		}
 		return $view->view($this, $view_tmp_dir, $tmp, $arr);
 	}
