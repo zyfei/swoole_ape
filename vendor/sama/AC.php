@@ -26,6 +26,16 @@ class AC {
 	// value view根目录
 	public static $view_cla_tmpdir_map = array();
 
+	// 所有的标记类
+	public static $classTags = array();
+
+	public static $methodTags = array();
+
+	// 注解和对应类，注解和对应方法的对象关系
+	
+	// 最后执行的方法
+	private static $final_run_exe_arr = array();
+
 	/**
 	 * 读取所有的php文件
 	 */
@@ -58,10 +68,33 @@ class AC {
 					}
 				}
 				// 在这里开始循环处理tag
-				$cla = "\\" . str_replace(DIRECTORY_SEPARATOR, "\\", $className);
+				$cla = str_replace(DIRECTORY_SEPARATOR, "\\", $className);
 				// 先处理
 				self::loadClassTag($cla);
 			}
+		}
+		
+		// 真正处理标签
+		for ($level = 1; $level <= 3; $level ++) {
+			foreach (self::$classTags as $tags) {
+				if (key_exists("level_" . $level, $tags)) {
+					foreach ($tags["level_" . $level] as $n) {
+						call_user_func_array($n[0], $n[1]);
+					}
+				}
+			}
+			foreach (self::$methodTags as $tags) {
+				if (key_exists("level_" . $level, $tags)) {
+					foreach ($tags["level_" . $level] as $n) {
+						call_user_func_array($n[0], $n[1]);
+					}
+				}
+			}
+		}
+		
+		// 执行final方法
+		foreach (self::$final_run_exe_arr as $n) {
+			call_user_func_array($n[0], $n[1]);
 		}
 	}
 
@@ -69,13 +102,13 @@ class AC {
 	 * 读取并解析类的注释。不读取静态方法
 	 */
 	private static function loadClassTag($obj) {
-		// 处理类标签
 		$ref = new \ReflectionClass($obj);
+		// 处理类标签
 		$class_tag_arr = self::preg_match_tag($ref->getDocComment());
 		foreach ($class_tag_arr as $n) {
 			$rn = 0;
-			$method = get_between($n, "@", "(");
-			$pram = str_replace("@" . $method . "(", "", $n, $rn);
+			$tag = get_between($n, "@", "(");
+			$pram = str_replace("@" . $tag . "(", "", $n, $rn);
 			$args = array(
 				$obj
 			);
@@ -83,8 +116,12 @@ class AC {
 				$pram = substr($pram, 0, strlen($pram) - 1);
 				$args = array_merge($args, explode(",", $pram));
 			}
-			if (key_exists($method, Sama::$_tag["class"])) {
-				call_user_func_array(Sama::$_tag["class"][$method], $args);
+			// 判断不同的注解优先级
+			if (key_exists($tag, Sama::$_tag["class"])) {
+				self::$classTags[$tag]["level_" . Sama::$_tag["class"][$tag]["level"]][] = array(
+					Sama::$_tag["class"][$tag]["value"], // 处理注解的方法
+					$args // 参数
+				);
 			}
 		}
 		
@@ -106,7 +143,10 @@ class AC {
 						$args = array_merge($args, explode(",", $pram));
 					}
 					if (key_exists($tag, Sama::$_tag["method"])) {
-						call_user_func_array(Sama::$_tag["method"][$tag], $args);
+						self::$methodTags[$tag]["level_" . Sama::$_tag["method"][$tag]["level"]][] = array(
+							Sama::$_tag["method"][$tag]["value"],
+							$args
+						);
 					}
 				}
 			}
@@ -125,12 +165,24 @@ class AC {
 		foreach ($tag_arr as $n) {
 			$str = str_replace($n, "", $str);
 		}
-		$preg = '/\@[^\s]+\n?/';
+		$preg = '/\@[^\s]+\s?/';
 		preg_match_all($preg, $str, $class_tag_arr2);
 		$class_tag_arr2 = $class_tag_arr2[0];
 		foreach ($class_tag_arr2 as $n) {
+			$n = str_replace("\n", "", $n);
+			$n = str_replace("\r", "", $n);
 			$tag_arr[] = $n . "()";
 		}
 		return $tag_arr;
+	}
+
+	/**
+	 * 所有注解加载完成之后执行
+	 */
+	public static function final_run_exe($fun, $args = array()) {
+		self::$final_run_exe_arr[] = array(
+			$fun,
+			$args
+		);
 	}
 }

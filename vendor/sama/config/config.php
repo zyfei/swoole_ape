@@ -34,9 +34,9 @@ return array(
 	// 设置task的数据临时目录，在swoole_server中，如果投递的数据超过8192字节，将启用临时文件来保存数据。这里的task_tmpdir就是用来设置临时文件保存的位置。
 	"task_tmpdir" => "/tmp",
 	
-	// 数据包分发策略。可以选择3种类型，默认为2。 这里设置为1 -> 轮循模式，收到会轮循分配给每一个worker进程
+	// 数据包分发策略。可以选择3种类型，默认为2。 根据fd取模固定分配
 	// https://wiki.swoole.com/wiki/page/277.html
-	"dispatch_mode" => 1,
+	"dispatch_mode" => 2,
 	
 	// 错误日志文件
 	// 开启守护进程模式后(daemonize => true)，标准输出将会被重定向到log_file。在PHP代码中echo/var_dump/print等打印到屏幕的内容会写入到log_file文件

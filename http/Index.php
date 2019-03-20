@@ -1,8 +1,8 @@
 <?php
 namespace http;
 
-use model\User;
 use sama\App;
+use sama\exception\Exception;
 
 /**
  * @controller(/a)
@@ -28,17 +28,20 @@ class Index {
 
 		// User::delete(23);
 
-		// User::delete_all("id=?",array(24));
-
-		$users = User::get(25);
-		// $users = User::count("id=?",array(24));
-		$users = User::page(0, 100, "id!=?", 25, "id desc");
-
-		return $app->view("login", $users);
+		//User::delete_all("id=?",array(24));
+		//$users = User::all("id!=1");
+		//dd($users);
+		//$users = Db::query('select * from t_user');
+		//$users = User::get(25);
+		//$users = User::count("id=?",array(24));
+		//$users = User::page(0, 100, "id!=?", 25, "id desc");
+		//$arr["aa"] = '{}';
+// 		return "abcd";
+// 		return $app->view("login", $arr);
 	}
 
 	public function bbb($app) {
-		dd("bbb");
+		throw new Exception("测试错误",301);
 		return "bbbb";
 	}
 }

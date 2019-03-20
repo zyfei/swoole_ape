@@ -179,7 +179,7 @@ class View {
 	 * 清空模板缓存
 	 */
 	public static function clear() {
-		foreach (glob(self::pathCheck(Sama::$_config['view_storage_dir']) . '*.tmp') as $start_file) {
+		foreach (glob(self::pathCheck(RUN_DIR.Sama::$_config['view_storage_dir']) . '*.tmp') as $start_file) {
 			unlink($start_file);
 		}
 	}

@@ -1,7 +1,6 @@
 <?php
 namespace http;
 
-use model\User;
 use sama\App;
 
 /**

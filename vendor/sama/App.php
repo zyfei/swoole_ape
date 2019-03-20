@@ -11,6 +11,9 @@ class App {
 
 	public $url = null;
 
+	// 当前协议
+	public $protocol = null;
+
 	public $request = null;
 
 	public $response = null;
@@ -52,19 +55,22 @@ class App {
 		$this->co_uid = \Co::getuid();
 		$this->data = $request->getData();
 		$this->url = $request->server['path_info'];
+	}
+
+	public static function route($app) {
 		// 获取处理类和方法
-		$cm_i = strrpos($this->url, "/");
-		$controller_url = substr($this->url, 0, $cm_i);
+		$cm_i = strrpos($app->url, "/");
+		$controller_url = substr($app->url, 0, $cm_i);
 		if ($controller_url == "") {
 			$controller_url = "/";
 		}
-		$method = substr($this->url, $cm_i + 1);
+		$method = substr($app->url, $cm_i + 1);
 		if (key_exists($controller_url, Ac::$controller_url_map)) {
-			$this->controller = Ac::$controller_url_map[$controller_url];
+			$app->controller = Ac::$controller_url_map[$controller_url];
 			if (key_exists($method, Ac::$controller_methods_honey_map[Ac::$controller_url_map[$controller_url]])) {
 				$method = Ac::$controller_methods_honey_map[Ac::$controller_url_map[$controller_url]][$method];
 			}
-			$this->method = $method;
+			$app->method = $method;
 		}
 	}
 
@@ -101,7 +107,7 @@ class App {
 		return $default;
 	}
 
-	public function get_mysql() {
+	public function get_db() {
 		if ($this->mysql == null) {
 			$this->mysql = MysqlPool::getInstance()->get_connection();
 		}
@@ -125,5 +131,12 @@ class App {
 			$view_tmp_dir = RUN_DIR . DIRECTORY_SEPARATOR . AC::$view_cla_tmpdir_map[$this->controller] . DIRECTORY_SEPARATOR;
 		}
 		return $view->view($this, $view_tmp_dir, $tmp, $arr);
+	}
+
+	/**
+	 * 获取此协程使用的app
+	 */
+	public static function getApp() {
+		return Sama::get_co_poll(\Co::getuid());
 	}
 }

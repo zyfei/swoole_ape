@@ -3,6 +3,7 @@ namespace sama\tag;
 
 use sama\Ioc;
 use sama\AC;
+use sama\view\View;
 
 /**
  * 类标签

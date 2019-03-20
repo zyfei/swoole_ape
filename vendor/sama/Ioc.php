@@ -1,6 +1,8 @@
 <?php
 namespace sama;
 
+use sama\aop\AopHandler;
+
 /**
  * new: 先完善tag系统
  * new: 在此基础上添加apo功能，bean工厂返回的将不是
@@ -41,18 +43,18 @@ class Ioc {
 	/**
 	 * 实例化bean对象
 	 */
-	public function _get($object, $is_new_obj = false) {
+	public function _get($object) {
 		// 如果没bind过，那么尝试通过名字构建
 		if (! isset($this->bindings[$object])) {
 			return $this->build($object);
 		}
 		// 如果是已经实例化，那么直接返回
-		if (! $is_new_obj && (! $this->bindings[$object] instanceof \Closure) && is_object($this->bindings[$object])) {
+		if ((! $this->bindings[$object] instanceof \Closure) && is_object($this->bindings[$object])) {
 			return $this->bindings[$object];
 		}
 		// 构建
 		$obj = $this->build($this->bindings[$object]);
-		$aop_heandler = new AopHandler($obj);
+		$aop_heandler = new AopHandler($object,$obj);
 		$this->bindings[$object] = $aop_heandler;
 		return $aop_heandler;
 	}
@@ -102,7 +104,7 @@ class Ioc {
 
 	protected function resolveClass(ReflectionParameter $parameter) {
 		// 调用get生成对象
-		return $this->get($parameter->getClass()->name, true);
+		return $this->get($parameter->getClass()->name);
 	}
 
 	public static function __callStatic($method, $arg) {

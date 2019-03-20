@@ -1,9 +1,10 @@
 <?php
 namespace model;
 
-use sama\db\MysqlPool;
+use sama\db\Db;
 
-class User extends MysqlPool {
+class User extends Db {
 	public static $table = "t_user";
 	public static $softDelete = true;
+	
 }

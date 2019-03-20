@@ -5,6 +5,8 @@ use sama\App;
 use sama\view\View;
 use sama\exception\Exception;
 use sama\AC;
+use sama\process\Worker;
+use sama\process\Task;
 
 /**
  * 高性能框架
@@ -49,7 +51,7 @@ class Sama {
 	 * 进程通道,manager进程使用
 	 */
 	public static $_workers_channel = null;
-	
+
 	/**
 	 * 记录所有进程状态,manager进程使用
 	 */
@@ -227,11 +229,11 @@ class Sama {
 			});
 		});
 	}
-
+	
 	/**
-	 * 消息触发
+	 * 消息来之前绑定协程=>app等
 	 */
-	private static function onMessage(App $app) {
+	private static function before_message($app){
 		// 添加协程关系
 		self::$coroutine_app_map[\Co::getuid()] = $app;
 		// 升级到最新版终于支持defer了
@@ -241,20 +243,8 @@ class Sama {
 			unset(self::$coroutine_app_map[\Co::getuid()]);
 			unset($app);
 		});
-		if ($app->controller == null || $app->method == null) {
-			$app->end();
-			return;
-		}
-		$obj = Ioc::get($app->controller);
-		$method = $app->method;
-		$obj_return = $obj->$method($app);
-		if (is_array($obj_return) || is_object($obj_return)) {
-			$obj_return = json_encode($obj_return);
-		}
-		$app->return_data = $app->return_data . $obj_return;
-		$app->end();
 	}
-
+	
 	/**
 	 * 开始web服务
 	 */
@@ -290,33 +280,44 @@ class Sama {
 		self::$server->on('workerStart', function ($server, $worker_id) {
 			self::workerStart($server, $worker_id);
 		});
-		self::$server->on('receive', function ($server, $fd, $reactor_id, $data) {});
+		
+		self::$server->on('connect', function ($server, $fd, $reactor_id) {
+			Worker::onConnect($server, $fd, $reactor_id);
+		});
+		self::$server->on('receive', function ($server, $fd, $reactor_id, $data) {
+			Worker::onReceive($server, $fd, $reactor_id,$data);
+		});
+		
+		/**
+		 * http请求
+		 */
 		self::$server->on('request', function ($request, $response) {
 			$app = new App();
 			$app->setHttp($request, $response);
-			self::onMessage($app);
+			self::before_message($app);
+			Worker::onRequest($app);
 		});
 		
 		/**
 		 * WebSocket请求触发
 		 */
 		self::$server->on('message', function ($server, $frame) {
-			echo "message \n";
+			Worker::onMessage($server, $frame);
 		});
 		
 		/**
 		 * 接收到UDP数据包时回调此函数
 		 */
 		self::$server->on('packet', function ($server, $data, $addr) {
-			echo "packet \n";
+			Worker::onPacket($server, $data, $addr);
 		});
 		
+		
 		self::$server->on('task', function ($server, $task_id, $reactor_id, $data) {
-			echo "New AsyncTask[id=$task_id]\n";
-			$server->finish("$data -> OK");
+			Task::onTask($server, $task_id, $reactor_id, $data);
 		});
 		self::$server->on('finish', function ($server, $task_id, $data) {
-			echo "AsyncTask[$task_id] finished: {$data}\n";
+			Task::onTask($server, $task_id, $reactor_id, $data);
 		});
 		self::$server->start();
 	}
@@ -423,7 +424,7 @@ class Sama {
 			case 'stop':
 				self::log("SwooleSama[$start_file] is stoping ...");
 				// 发送停止信号
-				$master_pid && @\swoole_process::kill($master_pid, SIGTERM);
+				$master_pid && \swoole_process::kill($master_pid, SIGTERM);
 				// Timeout.
 				$timeout = 5;
 				$start_time = time();
@@ -607,5 +608,12 @@ class Sama {
 	 */
 	private static function clear_storage() {
 		View::clear();
+	}
+
+	/**
+	 * 获取协程app
+	 */
+	public static function getApp() {
+		return self::$coroutine_app_map[\Co::getuid()];
 	}
 }
