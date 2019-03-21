@@ -96,6 +96,10 @@ return array(
 	// 在4.x版本中开启enable_coroutine时，底层会额外增加一个协程数量的检测。当前无任何协程时进程才会退出。
 	"reload_async" => true,
 	
+	// enable_coroutine参数，默认为true，通过设置为false可关闭内置协程。
+	// 配置里面关闭，但是在回调里面开启。测试发现reload之后，在回调中不会默认开启协程
+	"enable_coroutine" => false,
+	
 	// 开启TCP快速握手特性。此项特性，可以提升TCP短连接的响应速度，在客户端完成握手的第三步，发送SYN包时携带数据。
 	"tcp_fastopen" => true,
 	

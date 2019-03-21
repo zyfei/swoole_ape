@@ -3,6 +3,8 @@ use sama\Sama;
 
 // 引入自动加载类
 require_once 'vendor/Autoloader.php';
+
+\Swoole\Runtime::enableCoroutine();
 /**
  * 这个config是全局配置。默认配置在_lib下的config.php中
  */

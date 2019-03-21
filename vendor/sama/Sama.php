@@ -203,6 +203,9 @@ class Sama {
 	 * 工作进程和任务进程启动
 	 */
 	private static function workerStart($server, $worker_id) {
+		//下面这些文件不会reload
+		//var_dump(get_included_files());
+		AC::run();
 		self::$server = $server;
 		global $argv;
 		if ($server->taskworker) {
@@ -211,7 +214,6 @@ class Sama {
 			swoole_set_process_name('swoole_sama: worker process  ' . $server->setting["name"] . ' ' . $server->setting["address"]);
 		}
 		go(function () use ($server) {
-
 			function worker_channel($server) {
 				$data = array();
 				$data["is_taskworker"] = $server->taskworker;
@@ -292,10 +294,12 @@ class Sama {
 		 * http请求
 		 */
 		self::$server->on('request', function ($request, $response) {
-			$app = new App();
-			$app->setHttp($request, $response);
-			self::before_message($app);
-			Worker::onRequest($app);
+			go(function () use ($request,$response) {
+				$app = new App();
+				$app->setHttp($request, $response);
+				self::before_message($app);
+				Worker::onRequest($app);
+			});
 		});
 		
 		/**
@@ -325,7 +329,6 @@ class Sama {
 	public static function runAll() {
 		self::init();
 		self::parseCommand();
-		AC::run();
 		self::displayUI();
 		self::run();
 	}
@@ -453,7 +456,7 @@ class Sama {
 				}
 				break;
 			case 'reload':
-				swoole_process::kill($master_pid, SIGUSR1);
+				\swoole_process::kill($master_pid, SIGUSR1);
 				self::log("SwooleSama[$start_file] reload");
 				exit();
 			default:

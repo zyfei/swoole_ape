@@ -15,8 +15,7 @@ class Index {
 
 	/** @mapping (/a) */
 	public function aaa(\sama\App $app) {
-		$a = md5("aaaa");
-		$app->send("hello world");
+		$app->send("hello world2");
 		$this->userServer->login();
 		// $user= array();
 		// $user['id'] = 23;

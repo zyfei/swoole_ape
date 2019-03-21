@@ -4,6 +4,7 @@ namespace sama\process;
 use sama\App;
 use sama\Sama;
 use sama\Bean;
+use sama\Route;
 
 class Worker {
 
@@ -11,7 +12,7 @@ class Worker {
 	 * http消息
 	 */
 	public static function onRequest($app) {
-		App::route($app);
+		Route::route($app);
 		if ($app->controller == null || $app->method == null) {
 			$app->end();
 			return;
