@@ -1,7 +1,7 @@
 <?php
 namespace sama\aop;
 
-use sama\Ioc;
+use sama\Bean;
 use sama\exception\Exception;
 use sama\Sama;
 
@@ -34,7 +34,7 @@ class AopHandler {
 		if (key_exists($this->bean_name . "::" . $method, AopHandler::$pointIncludeMethods)) {
 			$have_aop = 1;
 			foreach (AopHandler::$pointIncludeMethods[$this->bean_name . "::" . $method] as $k => $n) {
-				$aop = Ioc::get($k);
+				$aop = Bean::get($k);
 				if ($aop->method_exists("before")) {
 					$aop->before(Sama::getApp());
 				}
@@ -56,7 +56,7 @@ class AopHandler {
 		}
 		if ($have_aop == 1) {
 			foreach (AopHandler::$pointIncludeMethods[$this->bean_name . "::" . $method] as $k => $n) {
-				$aop = Ioc::get($k);
+				$aop = Bean::get($k);
 				if ($have_exception == 1 && $aop->method_exists("throwing")) {
 					$aop->throwing(Sama::getApp());
 				}

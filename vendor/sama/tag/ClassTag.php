@@ -1,7 +1,7 @@
 <?php
 namespace sama\tag;
 
-use sama\Ioc;
+use sama\Bean;
 use sama\AC;
 use sama\view\View;
 
@@ -19,14 +19,14 @@ class ClassTag {
 		if ($name == null) {
 			$name = $cla;
 		}
-		Ioc::bind($name, $cla);
+		Bean::bind($name, $cla);
 	}
 
 	/**
 	 * 控制器
 	 */
 	public static function controller($cla, $parm = "") {
-		Ioc::bind($cla, $cla);
+		Bean::bind($cla, $cla);
 		if ($parm == "") {
 			$parm = "/";
 			$parm_arr = explode("\\", $cla);

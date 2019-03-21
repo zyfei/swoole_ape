@@ -33,4 +33,5 @@ class MethodTag {
 		}
 		AC::$controller_methods_honey_map[$cla][$url] = $method;
 	}
+	
 }

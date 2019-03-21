@@ -3,7 +3,7 @@ namespace sama\process;
 
 use sama\App;
 use sama\Sama;
-use sama\Ioc;
+use sama\Bean;
 
 class Worker {
 
@@ -16,7 +16,7 @@ class Worker {
 			$app->end();
 			return;
 		}
-		$obj = Ioc::get($app->controller);
+		$obj = Bean::get($app->controller);
 		$method = $app->method;
 		$obj_return = $obj->$method($app);
 		if (is_array($obj_return) || is_object($obj_return)) {

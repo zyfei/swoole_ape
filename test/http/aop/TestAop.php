@@ -1,14 +1,14 @@
 <?php
-namespace http\aop;
+namespace test\http\aop;
 
-use http\Index;
 use sama\aop\AopInterface;
-use http\Index2;
 use sama\App;
+use test\http\Index;
+use test\http\Index2;
 
 /**
  * 切片类
- * @aop()
+ * @aop
  */
 class TestAop implements AopInterface {
 
@@ -21,7 +21,6 @@ class TestAop implements AopInterface {
 		// 排除的bean
 		"exclude" => array(
 			Index2::class . "::aaa",
-			Index::class . "::aaa"
 		)
 	);
 
@@ -49,6 +48,7 @@ class TestAop implements AopInterface {
 	 * 标记方法为前置通知 - 在目标方法执行前先执行此方法
 	 */
 	public function before(App $app) {
+		dd("aop before");
 	}
 
 	/**

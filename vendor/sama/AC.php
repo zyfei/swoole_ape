@@ -30,6 +30,8 @@ class AC {
 	public static $classTags = array();
 
 	public static $methodTags = array();
+	
+	public static $varTags = array();
 
 	// 注解和对应类，注解和对应方法的对象关系
 	
@@ -84,6 +86,13 @@ class AC {
 				}
 			}
 			foreach (self::$methodTags as $tags) {
+				if (key_exists("level_" . $level, $tags)) {
+					foreach ($tags["level_" . $level] as $n) {
+						call_user_func_array($n[0], $n[1]);
+					}
+				}
+			}
+			foreach (self::$varTags as $tags) {
 				if (key_exists("level_" . $level, $tags)) {
 					foreach ($tags["level_" . $level] as $n) {
 						call_user_func_array($n[0], $n[1]);
@@ -151,6 +160,33 @@ class AC {
 				}
 			}
 		}
+		
+		// 处理属性标签
+		$vars = $ref->getProperties();
+		if ($vars) {
+			foreach ($vars as $var) {
+				$var_tag_arr = self::preg_match_tag($var->getDocComment());
+				foreach ($var_tag_arr as $n) {
+					$rn = 0;
+					$tag = get_between($n, "@", "(");
+					$pram = str_replace("@" . $tag . "(", "", $n, $rn);
+					$args = array(
+						$obj,
+						$var->name
+					);
+					if ($rn != 0) {
+						$pram = substr($pram, 0, strlen($pram) - 1);
+						$args = array_merge($args, explode(",", $pram));
+					}
+					if (key_exists($tag, Sama::$_tag["var"])) {
+						self::$varTags[$tag]["level_" . Sama::$_tag["var"][$tag]["level"]][] = array(
+							Sama::$_tag["var"][$tag]["value"],
+							$args
+						);
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -158,7 +194,6 @@ class AC {
 	 */
 	private static function preg_match_tag($str) {
 		$str = preg_replace('# #', '', $str);
-		// foreach (self::$class_tags as $k2 => $n2) {
 		$preg = '/\@[\s\S]*?\\([\s\S]*?\)/';
 		preg_match_all($preg, $str, $tag_arr);
 		$tag_arr = $tag_arr[0];

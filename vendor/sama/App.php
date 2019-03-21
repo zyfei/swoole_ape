@@ -67,8 +67,10 @@ class App {
 		$method = substr($app->url, $cm_i + 1);
 		if (key_exists($controller_url, Ac::$controller_url_map)) {
 			$app->controller = Ac::$controller_url_map[$controller_url];
-			if (key_exists($method, Ac::$controller_methods_honey_map[Ac::$controller_url_map[$controller_url]])) {
-				$method = Ac::$controller_methods_honey_map[Ac::$controller_url_map[$controller_url]][$method];
+			if (key_exists(Ac::$controller_url_map[$controller_url], Ac::$controller_methods_honey_map)) {
+				if (key_exists($method, Ac::$controller_methods_honey_map[Ac::$controller_url_map[$controller_url]])) {
+					$method = Ac::$controller_methods_honey_map[Ac::$controller_url_map[$controller_url]][$method];
+				}
 			}
 			$app->method = $method;
 		}
@@ -125,7 +127,7 @@ class App {
 	}
 
 	public function view($tmp, $arr) {
-		$view = Ioc::get(View::class);
+		$view = Bean::get(View::class);
 		$view_tmp_dir = "";
 		if (key_exists($this->controller, AC::$view_cla_tmpdir_map)) {
 			$view_tmp_dir = RUN_DIR . DIRECTORY_SEPARATOR . AC::$view_cla_tmpdir_map[$this->controller] . DIRECTORY_SEPARATOR;

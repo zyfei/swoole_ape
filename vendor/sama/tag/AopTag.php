@@ -1,7 +1,7 @@
 <?php
 namespace sama\tag;
 
-use sama\Ioc;
+use sama\Bean;
 use sama\aop\AopHandler;
 use sama\AC;
 
@@ -17,8 +17,8 @@ class AopTag {
 		if ($name == null) {
 			$name = $cla;
 		}
-		Ioc::bind($name, $cla);
-		$aop = Ioc::get($name);
+		Bean::bind($name, $cla);
+		$aop = Bean::get($name);
 		// 处理方法
 		if ($aop->isset("pointMethod")) {
 			$pointMethod = $aop->pointMethod;
@@ -39,7 +39,7 @@ class AopTag {
 			$pointBean = $aop->pointBean;
 			if (key_exists("include", $pointBean) && is_array($pointBean["include"])) {
 				foreach ($pointBean["include"] as $k => $n) {
-					$ref = new \ReflectionClass(Ioc::get($n)->get_target());
+					$ref = new \ReflectionClass(Bean::get($n)->get_target());
 					$methods = $ref->getMethods();
 					foreach ($methods as $k2 => $n2) {
 						$method = $n2->name;
@@ -49,7 +49,7 @@ class AopTag {
 			}
 			if (key_exists("exclude", $pointBean) && is_array($pointBean["exclude"])) {
 				foreach ($pointBean["exclude"] as $k => $n) {
-					$ref = new \ReflectionClass(Ioc::get($n)->get_target());
+					$ref = new \ReflectionClass(Bean::get($n)->get_target());
 					$methods = $ref->getMethods();
 					foreach ($methods as $k2 => $n2) {
 						$method = $n2->name;

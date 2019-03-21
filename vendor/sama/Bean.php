@@ -7,19 +7,33 @@ use sama\aop\AopHandler;
  * new: 先完善tag系统
  * new: 在此基础上添加apo功能，bean工厂返回的将不是
  */
-class Ioc {
+class Bean {
 
-	private static $ioc = null;
+	private static $bean = null;
 
 	// 存储注册的回调函数，为键值对关联数组
 	protected $bindings = array();
 
+	// 存储类=>bean 的键值对
+	protected $_bindings = array();
+
 	/**
 	 * 判断是否绑定过
 	 */
-	public function has($name) {
-		if (isset($this->bindings[$object])) {
+	public function _has($name) {
+		if (isset($this->bindings[$name])) {
 			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * 通过类名获取bean名字
+	 */
+	public function _getBeanNameByClass($cla) {
+		if (isset($this->_bindings[$cla])) {
+			return $this->_bindings[$cla];
 		} else {
 			return false;
 		}
@@ -29,6 +43,7 @@ class Ioc {
 	public function _bind($name, $concrete = null) {
 		// 如果不是匿名函数，那么就转换成匿名函数
 		if (! $concrete instanceof \Closure) {
+			$this->_bindings[$concrete] = $name;
 			$concrete = function ($c) use ($name, $concrete) {
 				$method = ($name == $concrete) ? 'build' : 'get';
 				return $c->$method($concrete);
@@ -54,7 +69,7 @@ class Ioc {
 		}
 		// 构建
 		$obj = $this->build($this->bindings[$object]);
-		$aop_heandler = new AopHandler($object,$obj);
+		$aop_heandler = new AopHandler($object, $obj);
 		$this->bindings[$object] = $aop_heandler;
 		return $aop_heandler;
 	}
@@ -108,11 +123,11 @@ class Ioc {
 	}
 
 	public static function __callStatic($method, $arg) {
-		if (static::$ioc == null) {
-			static::$ioc = new Ioc();
+		if (static::$bean == null) {
+			static::$bean = new Bean();
 		}
 		return call_user_func_array(array(
-			static::$ioc,
+			static::$bean,
 			$method
 		), $arg);
 	}

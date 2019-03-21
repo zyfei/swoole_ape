@@ -29,6 +29,13 @@ return array(
 		"mapping" => array(
 			"value" => "\\sama\\tag\\MethodTag::mapping",
 			"level" => 3
-		)
+		),
+	),
+	// 属性上的s标签
+	"var" => array(
+		"Resource" => array(
+			"value" => "\\sama\\tag\\VarTag::resource",
+			"level" => 3
+		),
 	)
 );

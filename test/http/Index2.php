@@ -1,5 +1,5 @@
 <?php
-namespace http;
+namespace test\http;
 
 use sama\App;
 
@@ -10,7 +10,7 @@ use sama\App;
 class Index2 {
 
 	/**
-	 * @mapping (/)
+	 * @mapping (/a)
 	 */
 	public function aaa(\sama\App $app) {
 		$app->send("hello world222");

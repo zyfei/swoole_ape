@@ -1,5 +1,5 @@
 <?php
-namespace model;
+namespace test\model;
 
 use sama\db\Db;
 
