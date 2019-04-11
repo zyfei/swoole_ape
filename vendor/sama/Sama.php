@@ -60,6 +60,11 @@ class Sama {
 	public static $dead_workers = array();
 
 	/**
+	 * 所有定时器ID，有的swoole版本定时器不关不能停止
+	 */
+	public static $timer_ids = array();
+
+	/**
 	 * 协程信息数组，保存协程id=>app格式的关系
 	 */
 	private static $coroutine_app_map = array();
@@ -194,6 +199,7 @@ class Sama {
 			file_put_contents(Sama::$_statisticsFile, json_encode(Sama::$_globalStatistics));
 		}
 		exec_statisticsFile();
+		return;
 		swoole_timer_tick(3000, function () {
 			exec_statisticsFile();
 		});
@@ -203,8 +209,8 @@ class Sama {
 	 * 工作进程和任务进程启动
 	 */
 	private static function workerStart($server, $worker_id) {
-		//下面这些文件不会reload
-		//var_dump(get_included_files());
+		// 下面这些文件不会reload
+		// var_dump(get_included_files());
 		AC::run();
 		self::$server = $server;
 		global $argv;
@@ -213,29 +219,28 @@ class Sama {
 		} else {
 			swoole_set_process_name('swoole_sama: worker process  ' . $server->setting["name"] . ' ' . $server->setting["address"]);
 		}
-		go(function () use ($server) {
-			function worker_channel($server) {
-				$data = array();
-				$data["is_taskworker"] = $server->taskworker;
-				$data["worker_id"] = $server->worker_id;
-				$data["pid"] = $server->worker_pid;
-				$data["memory"] = round(memory_get_usage(true) / (1024 * 1024), 2) . "M";
-				$data["status"] = $server->stats();
-				// 通知manager进程(注意不是master进程)
-				Sama::send_worker_channel("worker", $data);
-			}
+
+		function worker_channel($server) {
+			$data = array();
+			$data["is_taskworker"] = $server->taskworker;
+			$data["worker_id"] = $server->worker_id;
+			$data["pid"] = $server->worker_pid;
+			$data["memory"] = round(memory_get_usage(true) / (1024 * 1024), 2) . "M";
+			$data["status"] = $server->stats();
+			// 通知manager进程(注意不是master进程)
+			Sama::send_worker_channel("worker", $data);
+		}
+		worker_channel($server);
+		// 3秒刷新一次
+		Sama::$timer_ids[] = swoole_timer_tick(3000, function () use ($server) {
 			worker_channel($server);
-			// 3秒刷新一次
-			swoole_timer_tick(3000, function () use ($server) {
-				worker_channel($server);
-			});
 		});
 	}
-	
+
 	/**
 	 * 消息来之前绑定协程=>app等
 	 */
-	private static function before_message($app){
+	private static function before_message($app) {
 		// 添加协程关系
 		self::$coroutine_app_map[\Co::getuid()] = $app;
 		// 升级到最新版终于支持defer了
@@ -246,7 +251,7 @@ class Sama {
 			unset($app);
 		});
 	}
-	
+
 	/**
 	 * 开始web服务
 	 */
@@ -287,14 +292,14 @@ class Sama {
 			Worker::onConnect($server, $fd, $reactor_id);
 		});
 		self::$server->on('receive', function ($server, $fd, $reactor_id, $data) {
-			Worker::onReceive($server, $fd, $reactor_id,$data);
+			Worker::onReceive($server, $fd, $reactor_id, $data);
 		});
 		
 		/**
 		 * http请求
 		 */
 		self::$server->on('request', function ($request, $response) {
-			go(function () use ($request,$response) {
+			go(function () use ($request, $response) {
 				$app = new App();
 				$app->setHttp($request, $response);
 				self::before_message($app);
@@ -316,12 +321,16 @@ class Sama {
 			Worker::onPacket($server, $data, $addr);
 		});
 		
-		
 		self::$server->on('task', function ($server, $task_id, $reactor_id, $data) {
 			Task::onTask($server, $task_id, $reactor_id, $data);
 		});
 		self::$server->on('finish', function ($server, $task_id, $data) {
 			Task::onTask($server, $task_id, $reactor_id, $data);
+		});
+		self::$server->on('workerStop', function ($server, $worker_id) {
+			foreach (self::$timer_ids as $n){
+				swoole_timer_clear($n);
+			}
 		});
 		self::$server->start();
 	}
@@ -341,7 +350,7 @@ class Sama {
 		self::$_startFile = $backtrace[count($backtrace) - 1]['file'];
 		swoole_set_process_name('swoole_sama: master process  start_file=' . self::$_startFile);
 		// 创建队列,最大1024个容量
-		self::$_workers_channel = new \Swoole\Channel(1024);
+		self::$_workers_channel = new \Swoole\Coroutine\Channel(1024);
 		self::$workers = array();
 		self::$_globalStatistics['name'] = self::$_config["name"];
 		self::$_globalStatistics['start_time'] = time();
@@ -427,7 +436,7 @@ class Sama {
 			case 'stop':
 				self::log("SwooleSama[$start_file] is stoping ...");
 				// 发送停止信号
-				$master_pid && \swoole_process::kill($master_pid, SIGTERM);
+				$master_pid && @\swoole_process::kill($master_pid, SIGTERM);
 				// Timeout.
 				$timeout = 5;
 				$start_time = time();

@@ -48,7 +48,7 @@ class TestAop implements AopInterface {
 	 * 标记方法为前置通知 - 在目标方法执行前先执行此方法
 	 */
 	public function before(App $app) {
-		dd("aop before");
+		//dd("aop before");
 	}
 
 	/**
