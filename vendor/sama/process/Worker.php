@@ -31,7 +31,7 @@ class Worker {
 	 * 连接触发
 	 */
 	public static function onConnect($server, $fd, $reactor_id) {
-		dd("onConnect");
+		//dd("onConnect");
 	}
 
 	/**
@@ -45,7 +45,7 @@ class Worker {
 	 * websocket消息
 	 */
 	public static function onMessage($server, $frame) {
-		echo "onMessage \n";
+		$server->push($frame->fd, "this is server");
 	}
 
 	/**

@@ -125,5 +125,7 @@ return array(
 	// 视图模板地址
 	'view_template_dir' => DIRECTORY_SEPARATOR . 'view',
 	// 视图缓存地址
-	'view_storage_dir' => DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . "view"
+	'view_storage_dir' => DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . "view",
+	// 状态表行长度 , 死去的和活着的 worker+task进程长度总和
+	'statistics_table_length' => 20
 );

@@ -41,23 +41,21 @@ class Sama {
 	private static $_init_workers = array();
 
 	/**
-	 * 使用status命令时候数据
+	 * 不会变的公共状态
 	 */
 	public static $_globalStatistics = array();
 
-	public static $_statisticsFile = null;
-
 	/**
-	 * 进程通道,manager进程使用
+	 * 进程状态内存表
 	 */
-	public static $_workers_channel = null;
+	public static $_statisticsTable = array();
+
+	public static $_statisticsFile = null;
 
 	/**
 	 * 记录所有进程状态,manager进程使用
 	 */
 	public static $workers = array();
-
-	public static $dead_workers = array();
 
 	/**
 	 * 所有定时器ID，有的swoole版本定时器不关不能停止
@@ -179,27 +177,25 @@ class Sama {
 
 		// 每10秒处理一次数据
 		function exec_statisticsFile() {
-			while (Sama::$_workers_channel->stats()["queue_num"] > 0) {
-				$a = Sama::$_workers_channel->pop();
-				if ($a["m"] == "worker") {
-					$worker = $a["data"];
-					Sama::$workers[$worker['pid']] = $worker;
-				}
+			foreach (Sama::$_statisticsTable as $data) {
+				Sama::$workers[$data['pid']] = $data;
 			}
 			foreach (Sama::$workers as $k => $n) {
-				// 如果不存活了
-				if (! \swoole_process::kill($k, 0)) {
-					Sama::$dead_workers[$k] = $n;
-					unset(Sama::$workers[$k]);
+				if ($n["live"] == 1) {
+					// 如果不存活了
+					if (! \swoole_process::kill($k, 0)) {
+						Sama::$_statisticsTable->set((string) $n['pid'], [
+							"live" => 0
+						]);
+						Sama::$workers[$k]["live"] = 1;
+					}
 				}
 			}
 			Sama::$_globalStatistics["workers"] = Sama::$workers;
-			Sama::$_globalStatistics["dead_workers"] = Sama::$dead_workers;
 			Sama::$_globalStatistics["request_count"] = Sama::$server->stats()["request_count"];
 			file_put_contents(Sama::$_statisticsFile, json_encode(Sama::$_globalStatistics));
 		}
 		exec_statisticsFile();
-		return;
 		swoole_timer_tick(3000, function () {
 			exec_statisticsFile();
 		});
@@ -222,13 +218,18 @@ class Sama {
 
 		function worker_channel($server) {
 			$data = array();
+			$data["live"] = 1;
 			$data["is_taskworker"] = $server->taskworker;
 			$data["worker_id"] = $server->worker_id;
 			$data["pid"] = $server->worker_pid;
-			$data["memory"] = round(memory_get_usage(true) / (1024 * 1024), 2) . "M";
-			$data["status"] = $server->stats();
-			// 通知manager进程(注意不是master进程)
-			Sama::send_worker_channel("worker", $data);
+			$data["memory"] = memory_get_usage(true);
+			$status = $server->stats();
+			$data["start_time"] = $status["start_time"];
+			$data["connection_num"] = $status["connection_num"];
+			$data["accept_count"] = $status["accept_count"];
+			$data["worker_request_count"] = $status["worker_request_count"];
+			$data["coroutine_num"] = $status["coroutine_num"];
+			Sama::$_statisticsTable->set((string) $server->worker_pid, $data);
 		}
 		worker_channel($server);
 		// 3秒刷新一次
@@ -261,7 +262,7 @@ class Sama {
 		}
 		foreach (self::$_init_workers as $k => $n) {
 			if ($k == 0) {
-				self::$server = new \swoole_server($n["host"], $n["port"], self::$_config["server_mode"], self::$_builtinTransports[$n["scheme"]]);
+				self::$server = new \Swoole\WebSocket\Server($n["host"], $n["port"], self::$_config["server_mode"], self::$_builtinTransports[$n["scheme"]]);
 				$config = self::$_config;
 				foreach (self::$_builtinConfigs[$n["scheme"]] as $k2 => $n2) {
 					$config[$k2] = $n2;
@@ -328,7 +329,11 @@ class Sama {
 			Task::onTask($server, $task_id, $reactor_id, $data);
 		});
 		self::$server->on('workerStop', function ($server, $worker_id) {
-			foreach (self::$timer_ids as $n){
+			// 设置为死亡状态
+			Sama::$_statisticsTable->set((string) $server->worker_pid, [
+				"live" => 0
+			]);
+			foreach (self::$timer_ids as $n) {
 				swoole_timer_clear($n);
 			}
 		});
@@ -349,8 +354,25 @@ class Sama {
 		$backtrace = debug_backtrace();
 		self::$_startFile = $backtrace[count($backtrace) - 1]['file'];
 		swoole_set_process_name('swoole_sama: master process  start_file=' . self::$_startFile);
-		// 创建队列,最大1024个容量
-		self::$_workers_channel = new \Swoole\Coroutine\Channel(1024);
+		
+		// 创建全局table
+		self::$_statisticsTable = new \Swoole\Table(self::$_config["statistics_table_length"]);
+		// 是否存活
+		self::$_statisticsTable->column('live', \swoole_table::TYPE_INT);
+		self::$_statisticsTable->column('worker_id', \swoole_table::TYPE_INT);
+		self::$_statisticsTable->column('start_time', \swoole_table::TYPE_INT);
+		self::$_statisticsTable->column('is_taskworker', \swoole_table::TYPE_INT);
+		self::$_statisticsTable->column('pid', \swoole_table::TYPE_INT);
+		self::$_statisticsTable->column('memory', \swoole_table::TYPE_INT);
+		self::$_statisticsTable->column('connection_num', \swoole_table::TYPE_INT);
+		self::$_statisticsTable->column('accept_count', \swoole_table::TYPE_INT);
+		self::$_statisticsTable->column('worker_request_count', \swoole_table::TYPE_INT);
+		self::$_statisticsTable->column('coroutine_num', \swoole_table::TYPE_INT);
+		self::$_statisticsTable->create();
+		
+		// 大约占用155616字节
+		// dd(self::$_statisticsTable->memorySize);
+		
 		self::$workers = array();
 		self::$_globalStatistics['name'] = self::$_config["name"];
 		self::$_globalStatistics['start_time'] = time();
@@ -539,28 +561,9 @@ class Sama {
 		//
 		"\033[47;\033[47;30mstatus\033[0m\n");
 		
-		foreach ($obj["dead_workers"] as $worker) {
-			$status = $worker["status"];
-			$start_date = T($status["start_time"]);
-			$worker_type = "worker";
-			if ($worker["is_taskworker"]) {
-				$worker_type = "task";
-			}
-			self::safeEcho($worker["pid"] . str_pad('', 7 - strlen($worker["pid"])) . 
-			//
-			$worker_type . str_pad('', 10 - strlen($worker_type)) . $worker["memory"] . str_pad('', 8 - strlen($worker["memory"])) . 
-			//
-			$start_date . str_pad('', 21 - strlen($start_date)) . 
-			//
-			$status["connection_num"] . str_pad('', 10 - strlen($status["connection_num"])) . $status["accept_count"] . str_pad('', 14 - strlen($status["accept_count"])) . 
-			//
-			$status["worker_request_count"] . str_pad('', 15 - strlen($status["worker_request_count"])) . $status["coroutine_num"] . str_pad('', 14 - strlen($status["coroutine_num"])) . 
-			//
-			"\033[31;40m [dead] \033[0m\n");
-		}
 		foreach ($obj["workers"] as $worker) {
-			$status = $worker["status"];
-			$start_date = T($status["start_time"]);
+			$start_date = T($worker["start_time"]);
+			$worker["memory"] = round($worker["memory"] / (1024 * 1024), 2) . "M";
 			$worker_type = "worker";
 			if ($worker["is_taskworker"]) {
 				$worker_type = "task";
@@ -571,11 +574,14 @@ class Sama {
 			//
 			$start_date . str_pad('', 21 - strlen($start_date)) . 
 			//
-			$status["connection_num"] . str_pad('', 10 - strlen($status["connection_num"])) . $status["accept_count"] . str_pad('', 14 - strlen($status["accept_count"])) . 
+			$worker["connection_num"] . str_pad('', 10 - strlen($worker["connection_num"])) . $worker["accept_count"] . str_pad('', 14 - strlen($worker["accept_count"])) . 
 			//
-			$status["worker_request_count"] . str_pad('', 15 - strlen($status["worker_request_count"])) . $status["coroutine_num"] . str_pad('', 14 - strlen($status["coroutine_num"])) . 
-			//
-			"\033[32;40m [ok] \033[0m\n");
+			$worker["worker_request_count"] . str_pad('', 15 - strlen($worker["worker_request_count"])) . $worker["coroutine_num"] . str_pad('', 14 - strlen($worker["coroutine_num"])));
+			if ($worker["live"] == 0) {
+				self::safeEcho("\033[31;40m [dead] \033[0m\n");
+			} else {
+				self::safeEcho("\033[32;40m [ok] \033[0m\n");
+			}
 		}
 		self::safeEcho("----------------------------------------------------------------\n");
 		self::safeEcho("Press Ctrl-C to quit.\n");
@@ -588,10 +594,8 @@ class Sama {
 	 *        	$msg
 	 */
 	public static function safeEcho($msg) {
-		if (! function_exists('posix_isatty') || posix_isatty(STDOUT)) {
-			self::$safeEchoData = self::$safeEchoData . $msg;
-			echo $msg;
-		}
+		self::$safeEchoData = self::$safeEchoData . $msg;
+		echo $msg;
 	}
 
 	/**
@@ -606,13 +610,6 @@ class Sama {
 			self::safeEcho($msg);
 		}
 		file_put_contents((string) self::$_config["log_file"], date('Y-m-d H:i:s') . ' ' . $msg, FILE_APPEND | LOCK_EX);
-	}
-
-	public static function send_worker_channel($method, $data = array()) {
-		$a = array();
-		$a["m"] = $method;
-		$a["data"] = $data;
-		self::$_workers_channel->push($a);
 	}
 
 	/**
