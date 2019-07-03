@@ -1,4 +1,6 @@
 <?php
+use sama\App;
+
 /**
  * 格式化时间
  */
@@ -13,60 +15,38 @@ function T($time = null, $fmt = null) {
 }
 
 /**
- * 检查特殊字符的input
+ * 把数组里面的numeric类型，都变成string
  */
-function input_safe($name, $default = "") {
-	$val = "";
-	if (array_key_exists($name, $_GET)) {
-		$val = $_GET[$name];
-	} elseif (array_key_exists($name, $_POST)) {
-		$val = $_POST[$name];
+function numeric_to_string($arr) {
+	if (! is_array($arr)) {
+		if (is_numeric($arr)) {
+			return $arr . "";
+		} else {
+			return $arr;
+		}
 	}
-	if ($val === "") {
-		return $default;
-	} else {
-		$val = str_replace("and", "", $val);
-		$val = str_replace("update", "", $val);
-		$val = str_replace("chr", "", $val);
-		$val = str_replace("delete", "", $val);
-		$val = str_replace("from", "", $val);
-		$val = str_replace("insert", "", $val);
-		$val = str_replace("mid", "", $val);
-		$val = str_replace("sleep", "", $val);
-		$val = str_replace("master", "", $val);
-		$val = str_replace("set", "", $val);
-		$val = str_replace("union", "", $val);
-		$val = str_replace("or", "", $val);
-		$val = addslashes($val);
-		return $val;
+	foreach ($arr as $k => $n) {
+		if (is_array($n)) {
+			$arr[$k] = numeric_to_string($n);
+		} elseif (is_numeric($n)) {
+			$arr[$k] = $n . "";
+		}
 	}
+	return $arr;
 }
 
 /**
- * session相关操作
+ * 便捷的input方法
  */
-function session($key, $val = "") {
-	// 开启session，在访问最后关闭
-	Http::sessionStart();
-	// 获取
-	if ($val === "") {
-		if (array_key_exists($key, $_SESSION)) {
-			$v = $_SESSION[$key];
-			Http::sessionWriteClose();
-			return $v;
-		} else {
-			Http::sessionWriteClose();
-			return null;
-		}
-		// 删除
-	} elseif ($val === null) {
-		unset($_SESSION[$key]);
-		Http::sessionWriteClose();
-		// 设置
-	} else {
-		$_SESSION[$key] = $val;
-		Http::sessionWriteClose();
-	}
+function input($name, $default = "") {
+	return App::getApp()->input($name, $default);
+}
+
+/**
+ * 便捷的api方法
+ */
+function api($msg, $code = 200, $fd = null) {
+	return App::getApp()->api($msg, $code, $fd);
 }
 
 /**
@@ -109,27 +89,6 @@ function R($url, $arr = array()) {
 		$str = $str . "<script>document.getElementById('my_f_fomr_d').submit();</script>";
 		SamaWeb::$SEND_BODY = SamaWeb::$SEND_BODY . $str;
 	}
-	return true;
-}
-
-/**
- * 发送api
- */
-function api($msg, $code, $content) {
-	Http::header("Content-type: application/json");
-	$arr["msg"] = $msg;
-	$arr["code"] = $code;
-	$content = json_int_to_string($content);
-	$arr["content"] = $content;
-	SamaWeb::$SEND_BODY = SamaWeb::$SEND_BODY . json_encode($arr);
-	return true;
-}
-
-/**
- * 返回页面
- */
-function view($tpl, &$arr = array()) {
-	SamaWeb::$SEND_BODY = SamaWeb::$SEND_BODY . SamaWeb::$view->view($tpl, $arr);
 	return true;
 }
 

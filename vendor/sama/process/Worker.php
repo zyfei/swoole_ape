@@ -12,19 +12,7 @@ class Worker {
 	 * http消息
 	 */
 	public static function onRequest($app) {
-		Route::route($app);
-		if ($app->controller == null || $app->method == null) {
-			$app->end();
-			return;
-		}
-		$obj = Bean::get($app->controller);
-		$method = $app->method;
-		$obj_return = $obj->$method($app);
-		if (is_array($obj_return) || is_object($obj_return)) {
-			$obj_return = json_encode($obj_return);
-		}
-		$app->return_data = $app->return_data . $obj_return;
-		$app->end();
+		Route::route($app,$app->uri);
 	}
 
 	/**
@@ -40,12 +28,12 @@ class Worker {
 	public static function onReceive($server, $fd, $reactor_id, $data) {
 		dd("onReceive");
 	}
-
+	
 	/**
 	 * websocket消息
 	 */
-	public static function onMessage($server, $frame) {
-		$server->push($frame->fd, "this is server");
+	public static function onMessage($app) {
+		Route::route($app,$app->url);
 	}
 
 	/**

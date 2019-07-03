@@ -197,8 +197,34 @@ class Sama {
 		}
 		exec_statisticsFile();
 		swoole_timer_tick(3000, function () {
+			// status状态文件
 			exec_statisticsFile();
 		});
+		
+		// 监控文件变化,自动reload
+		if (self::$_config["filemonitor"] == 1) {
+			$last_time_arr = array();
+			swoole_timer_tick(1000, function () use (&$last_time_arr, $server) {
+				// 是否监控文件变化 自动reload
+				$dir_iterator = new \RecursiveDirectoryIterator(RUN_DIR);
+				$iterator = new \RecursiveIteratorIterator($dir_iterator);
+				foreach ($iterator as $file) {
+					// only check php files
+					if (pathinfo($file, PATHINFO_EXTENSION) != 'php') {
+						continue;
+					}
+					if (! array_key_exists((string) $file, $last_time_arr)) {
+						$last_time_arr[(string) $file] = $file->getMTime();
+					}
+					if ($last_time_arr[(string) $file] < $file->getMTime()) {
+						echo "\n\n======file update log beg=====\n" . $file . " update and reload\n" . "======file update log end=====\n\n";
+						\swoole_process::kill($server->master_pid, SIGUSR1);
+						$last_time_arr[(string) $file] = $file->getMTime();
+						break;
+					}
+				}
+			});
+		}
 	}
 
 	/**
@@ -309,10 +335,30 @@ class Sama {
 		});
 		
 		/**
+		 * WebSocket请求连接
+		 */
+		self::$server->on('open', function ($server, $request) {
+			go(function () use ($server, $request) {
+				$request->server['request_uri'] = self::$_config["default_websocket_onOpen_url"];
+				$app = new App();
+				$app->setWebsocket($server, $request, true);
+				self::before_message($app);
+				// open的时候和http请求差不多
+				Worker::onRequest($app);
+			});
+		});
+		
+		/**
 		 * WebSocket请求触发
 		 */
 		self::$server->on('message', function ($server, $frame) {
-			Worker::onMessage($server, $frame);
+			$frame->data = json_decode($frame->data , true);
+			go(function () use ($server, $frame) {
+				$app = new App();
+				$app->setWebsocket($server, $frame);
+				self::before_message($app);
+				Worker::onMessage($app);
+			});
 		});
 		
 		/**

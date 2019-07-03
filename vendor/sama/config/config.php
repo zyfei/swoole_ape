@@ -9,6 +9,9 @@ return array(
 	// 是否开启守护进程,默认不开启
 	"daemonize" => 0,
 	
+	// 是否监听文件变化,默认不监控
+	"filemonitor" => 0,
+	
 	// 运行的模式 SWOOLE_PROCESS多进程模式（默认） SWOOLE_BASE基本模式
 	"server_mode" => SWOOLE_PROCESS,
 	
@@ -47,9 +50,9 @@ return array(
 	"log_level" => 0,
 	
 	// 启用心跳检测，此选项表示每隔多久轮循一次，单位为秒。如 heartbeat_check_interval => 60，表示每60秒，遍历所有连接，如果该连接在60秒内，没有向服务器发送任何数据，此连接将被强制关闭。
-	"heartbeat_check_interval" => 60,
+	"heartbeat_check_interval" => 300,
 	// 与heartbeat_check_interval配合使用。表示连接最大允许空闲的时间
-	"heartbeat_idle_time" => 300,
+	"heartbeat_idle_time" => 600,
 	
 	// 启用CPU亲和性设置。在多核的硬件平台中，启用此特性会将swoole的reactor线程/worker进程绑定到固定的一个核上。可以避免进程/线程的运行时在多个核之间互相切换，提高CPU Cache的命中率。
 	"open_cpu_affinity" => 1,
@@ -127,5 +130,8 @@ return array(
 	// 视图缓存地址
 	'view_storage_dir' => DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . "view",
 	// 状态表行长度 , 死去的和活着的 worker+task进程长度总和
-	'statistics_table_length' => 20
+	'statistics_table_length' => 20,
+	// 打开websocket默认URL
+	'default_websocket_onOpen_url' => '/websocket/onOpen'
+
 );
