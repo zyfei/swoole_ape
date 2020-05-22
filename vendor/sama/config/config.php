@@ -132,6 +132,7 @@ return array(
 	// 状态表行长度 , 死去的和活着的 worker+task进程长度总和
 	'statistics_table_length' => 20,
 	// 打开websocket默认URL
-	'default_websocket_onOpen_url' => '/websocket/onOpen'
-
+	'default_websocket_onOpen_url' => '/websocket/onOpen',
+	// 打开websocket默认URL
+	'default_websocket_onClose_url' => '/websocket/onClose'
 );

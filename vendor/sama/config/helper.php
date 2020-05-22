@@ -58,8 +58,8 @@ function fun($f) {
 
 // 返回js的alert脚本
 function alert($str) {
-	SamaWeb::$SEND_BODY = SamaWeb::$SEND_BODY . "<meta content='text/html; charset=utf-8' http-equiv='Content-Type'>";
-	SamaWeb::$SEND_BODY = SamaWeb::$SEND_BODY . "<script>alert('" . $str . "');</script>";
+	App::getApp()->return_data = App::getApp()->return_data . "<meta content='text/html; charset=utf-8' http-equiv='Content-Type'>";
+	App::getApp()->return_data = App::getApp()->return_data . "<script>alert('" . $str . "');</script>";
 	return true;
 }
 
@@ -67,18 +67,18 @@ function alert($str) {
  * 返回上一页的js脚本
  */
 function history_back() {
-	SamaWeb::$SEND_BODY = SamaWeb::$SEND_BODY . "<script>history.back();</script>";
+	App::getApp()->return_data = App::getApp()->return_data . "<script>history.back();</script>";
 }
 
 // 重定向方法,url需要传递相对于views的路径
 function R($url, $arr = array()) {
 	$en = strpos($url, "http");
 	if ($en !== 0) {
-		$url = SamaWeb::$MODULE_URL . $url;
+		$url = App::getApp()->home . $url;
 	}
 	// 跳转默认是当前模块
 	if (count($arr) <= 0) {
-		SamaWeb::$SEND_BODY = SamaWeb::$SEND_BODY . "<script>location.href='" . $url . "';</script>";
+		App::getApp()->return_data = App::getApp()->return_data . "<script>location.href='" . $url . "';</script>";
 	} else {
 		$str = "";
 		$str = "<form method='post' action='" . $url . "' id='my_f_fomr_d'>";
@@ -87,7 +87,7 @@ function R($url, $arr = array()) {
 		}
 		$str = $str . "</form>";
 		$str = $str . "<script>document.getElementById('my_f_fomr_d').submit();</script>";
-		SamaWeb::$SEND_BODY = SamaWeb::$SEND_BODY . $str;
+		App::getApp()->return_data = App::getApp()->return_data . $str;
 	}
 	return true;
 }

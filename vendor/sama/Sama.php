@@ -349,6 +349,26 @@ class Sama {
 		});
 		
 		/**
+		 * WebSocket请求连接
+		 */
+		self::$server->on('close', function ($server, $fd) {
+			$request = array();
+			$request["fd"] = $fd;
+			$request = (object)$request;
+			go(function () use ($server, $request) {
+				$request->server['request_uri'] = self::$_config["default_websocket_onClose_url"];
+				$request->data["key"] = "";
+				$request->data["data"] = array();
+				$request->data["url"] = $request->server['request_uri'];
+				$app = new App();
+				$app->setWebsocket($server, $request);
+				self::before_message($app);
+				// open的时候和http请求差不多
+				Worker::onMessage($app);
+			});
+		});
+		
+		/**
 		 * WebSocket请求触发
 		 */
 		self::$server->on('message', function ($server, $frame) {
